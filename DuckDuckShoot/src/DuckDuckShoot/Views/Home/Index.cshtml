@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<button id="testbutton">Press Me (with the console open)</button>
+@section scripts
+{
+    <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
+    <script src="/signalr/js"></script>
+    <script type="text/javascript">
+    $(function () {
+        // Get a reference to the test hub
+        var gameHub = $.connection.game;
+        // Add a SignalR Client method which logs a received message in the console
+        gameHub.client.echo = function (message) {
+            console.log(message);
+        }
+        // Start the connection
+        $.connection.hub.start();
+        // When the button is clicked, call Echo on the TestHub
+        $("#testbutton").click(function(){
+            gameHub.server.echo("I've been hit!");
+        });
+    });
+    </script>
+}
