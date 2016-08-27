@@ -174,6 +174,15 @@ namespace DuckDuckShoot.Models
 
         }
 
+        public void RemovePlayerFromGame(Player player)
+        {
+            if (IsMidTurn)
+            {
+                player.Kill();
+                player.IsActiveUser = false;
+            }
+        }
+
         /// <summary>
         /// Get the actions performed this turn, in order
         /// </summary>

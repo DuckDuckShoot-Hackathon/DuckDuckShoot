@@ -10,6 +10,7 @@ namespace DuckDuckShoot.Models
 
         // The User in the lobby that controls this player
         public User PlayerUser { get; }
+        public bool IsActiveUser { get; set; }
 
         // Whether this Player is alive
         private bool isAlive;
@@ -22,6 +23,7 @@ namespace DuckDuckShoot.Models
         public Player(User user, int numDucks)
         {
             isAlive = true;
+            IsActiveUser = true;
             PlayerUser = user;
             this.numDucks = numDucks;
         }
