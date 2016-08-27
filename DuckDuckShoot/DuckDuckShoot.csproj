@@ -151,6 +151,7 @@
     <Compile Include="Hubs\GameHub.cs" />
     <Compile Include="Models\Game.cs" />
     <Compile Include="Models\Lobby.cs" />
+    <Compile Include="Models\LobbyState.cs" />
     <Compile Include="Models\Player.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
