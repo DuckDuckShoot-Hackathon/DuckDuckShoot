@@ -7,5 +7,14 @@ namespace DuckDuckShoot.Models
 {
     public class Lobby
     {
+        public List<User> Users { get; }
+        public Game CurrentGame { get; set; }
+
+        public Lobby()
+        {
+            Users = new List<User>();
+            CurrentGame = null;
+        }
+
     }
 }
