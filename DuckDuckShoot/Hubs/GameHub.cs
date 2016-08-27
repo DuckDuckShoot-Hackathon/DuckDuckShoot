@@ -18,7 +18,7 @@ namespace DuckDuckShoot.Hubs
         public void Send(string message)
         {
             // Call the broadcastMessage method to update clients.
-            Clients.All.broadcastMessage(Context.ConnectionId, message);
+            Clients.All.broadcastMessage(GameLobby.getUserFromConnectionId(Context.ConnectionId).Name, message);
         }
 
         public void StartGame()
