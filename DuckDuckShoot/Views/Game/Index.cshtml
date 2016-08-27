@@ -37,13 +37,23 @@
                 // Start the connection.
                 SJ.iwc.SignalR.start().done(function () {
                     console.log("Connection to Server Successful");
-                    game.server.newName(prompt("Enter your name"));
-                    $('#sendmessage').click(function () {
-                        // Call the Send method on the hub.
-                        game.server.send($('#message').val());
-                        // Clear text box and reset focus for next comment.
-                        $('#message').val('').focus();
-                    });
+                    var handleNameReturn;
+                    var getName = function() {
+                        game.server.newName(prompt("That name is taken. Please use a different one.")).done(handleNameReturn);
+                    }
+                    handleNameReturn = function (success) {
+                        if (success) {
+                            $('#sendmessage').click(function () {
+                                // Call the Send method on the hub.
+                                game.server.send($('#message').val());
+                                // Clear text box and reset focus for next comment.
+                                $('#message').val('').focus();
+                            });
+                        } else {
+                            getName();
+                        }
+                    };
+                    game.server.newName(prompt("Enter your name")).done(handleNameReturn);
                 });
             });
     </script>
