@@ -25,7 +25,5 @@ namespace DuckDuckShoot.Models
             this.numDucks = numDucks;
         }
 
-        public void
-
     }
 }
