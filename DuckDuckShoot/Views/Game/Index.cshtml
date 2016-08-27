@@ -5,6 +5,10 @@
     <div id="players"></div>
     <div id="aliveplayers"></div>
     <p id="gameInProgress"></p>
+    <div id="game">
+        <div id="outcomes"></div>
+        <div id="actions"></div>
+    </div>
 </div>
 @section scripts {
     <!--Reference the SignalR library. -->
@@ -27,7 +31,7 @@
                     addPlayer: function (name) {
                         $("#playersHeader").text("Players:");
                         var encodedName = $('<div />').text(name).html();
-                        $('#players').append("<p id='player-" + name + "'>- " + encodedName + '</p>');
+                        $('#players').append("<span id='player-" + name + "'>- " + encodedName + '</span>');
                         players.push(name);
                     },
                     removePlayer: function(name) {
@@ -58,15 +62,15 @@
                     players = state["names"];
                     alivePlayers = state["aliveNames"];
                     gameInProgress = state["gameInProgress"];
-                    $('#players').append("<p id='playersHeader'>Players:" + (players.length === 0 ? " None" : "") + "</p>");
+                    $('#players').append("<span id='playersHeader'>Players:" + (players.length === 0 ? " None" : "") + "</span>");
                     for (var i = 0; i < players.length; i++) {
                         var encodedName = $('<div />').text(players[i]).html();
-                        $('#players').append("<p id='player-" + players[i] + "'>- " + encodedName + '</p>');
+                        $('#players').append("<span id='player-" + players[i] + "'>- " + encodedName + '</span>');
                     }
-                    $('#aliveplayers').append("<p id='AlivelayersHeader'>Alive Players:" + (alivePlayers.length === 0 ? " None" : "") + "</p>");
+                    $('#aliveplayers').append("<span id='AlivelayersHeader'>Alive Players:" + (alivePlayers.length === 0 ? " None" : "") + "</span>");
                     for (var j = 0; j < alivePlayers.length; j++) {
                         var encodedAliveName = $('<div />').text(alivePlayers[j]).html();
-                        $('#aliveplayers').append("<p id='aliveplayer-" + alivePlayers[j] + "'>- " + encodedAliveName + '</p>');
+                        $('#aliveplayers').append("<span id='aliveplayer-" + alivePlayers[j] + "'>- " + encodedAliveName + '</span>');
                     }
                     $('#gameInProgress').text("Progress Status: " + (gameInProgress ? "Game In Progress" : "Game Not In Progress"));
                 });
