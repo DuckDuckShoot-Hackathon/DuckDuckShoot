@@ -4,9 +4,11 @@
 <div>
     <div id="players"></div>
     <div id="aliveplayers"></div>
-    <p id="gameInProgress"></p>
+    <span id="gameInProgress"></span>
     <div id="game">
+        <span>Outcomes: </span>
         <div id="outcomes"></div>
+        <span>Actions: </span>
         <div id="actions"></div>
     </div>
 </div>
@@ -39,16 +41,16 @@
                         var index = players.indexOf(name);
                         players.splice(index, 1);
                     },
-                    gameStart: function () {
+                    gameStart: function (playerList) {
 
                     },
                     turnStart: function (state) {
 
-                        },
-                        getOutcomes: function (outcomes) {
-                            console.log(outcomes);
-                        },
-                        gameEnd: function (winners) {
+                    },
+                    getOutcomes: function (outcomes) {
+                        console.log(outcomes);
+                    },
+                    gameEnd: function (winners) {
 
                     }                        
                 }
