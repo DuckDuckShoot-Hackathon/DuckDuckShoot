@@ -221,20 +221,19 @@ function distributePlayers(deg) {
         step = (2 * Math.PI) / fields.length;
 
     //Go through each player and set up position + call sprite
-    fields.each(function() {
+    fields.each(function () {
         var x = Math.round(width / 2 + radius * Math.cos(angle) - $(this).width() / 2);
         var y = Math.round(height / 2 + radius * Math.sin(angle) - $(this).height() / 2);
 
-        $(this)
-            .css({
-                left: x + 'px',
-                top: y + 'px',
-            });
+        $(this).css({
+            left: x + 'px',
+            top: y + 'px',
+        });
 
         angle += step;
 
         //400, 300 is the center point, so get the angle from there
-        setSprite('stand', $(this).attr("id"), 400, 300, x + 55, y + 55);
+        setSprite('stand', $(this).find('img').attr("id"), 400, 300, x + 55, y + 55);
     });
 }
 
@@ -242,56 +241,51 @@ var incrementUsers = 0;
 
 //Add a new player with a username
 function addPlayer(username) {
-    $('<div/>',
-        {
-            'class': 'field',
-            'id': username
-        })
-        .append(
-            $('<p/>', { 'class': 'username', 'text': username }),
-            $('<button/>',
-            {
-                'class': 'shootButton hide',
-                'id': 'shoot_' + username,
-                'text': 'Shoot'
-            })
-        )
-        .css({
-            left: $('#container').width() / 2 - 25 + 'px',
-            top: $('#container').height() / 2 - 25 + 'px'
-        })
-        .addClass('anim')
-        .appendTo('#container')
-    distributePlayers();
+    $('<div/>', {
+        'class': 'field'
+    }).append(
+        $('<p/>', { 'class': 'username', 'text': username }),
+
+        $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player'}),
+                $('<button/>', {
+                    'class': 'shootButton', 'id': 'shoot_' + username, 'text': 'Shoot'
+                })
+
+
+            )
+.css({
+    left: $('#container').width() / 2 - 25 + 'px',
+    top: $('#container').height() / 2 - 25 + 'px'
+})
+.addClass('anim')
+.appendTo('#container')
+distributePlayers();
 }
 
 function deleteUser(username) {
     $('#' + username)
-        .attr('deleting', 'true')
-        .css({
-            left: $('#container').width() / 2 - 25 + 'px',
-            top: $('#container').height() / 2 - 25 + 'px'
-        })
-        .fadeOut(400,
-            function() {
-                $(this).remove();
-            });
+    .attr('deleting', 'true')
+    .css({
+        left: $('#container').width() / 2 - 25 + 'px',
+        top: $('#container').height() / 2 - 25 + 'px'
+    })
+    .fadeOut(400, function () {
+        $(this).remove();
+    });
 
     distributePlayers();
 }
 
 //Add another player using button (testing purposes)
-$('#add')
-    .click(function() {
-        incrementUsers++;
-        addPlayer('testuser' + incrementUsers);
-    });
+$('#add').click(function () {
+    incrementUsers++;
+    addPlayer('testuser' + incrementUsers);
+});
 
-$('#delete')
-    .click(function() {
-        deleteUser('testuser' + incrementUsers);
-        incrementUsers--;
-    });
+$('#delete').click(function () {
+    deleteUser('testuser' + incrementUsers);
+    incrementUsers--;
+});
 
 distributePlayers();
 
@@ -345,49 +339,42 @@ function setSprite(action, id, currentX, currentY, targetX, targetY) {
     ];
 
     var deadimages = [
-        'dead.png'
+        'deadimg.png'
     ];
-
+    console.log(id);
     if (action == 'stand') {
-        document.getElementById(id).style.backgroundImage = 'url(images/' + standimages[spriteNum] + ')';
+        document.getElementById(id).src = imagePath + standimages[spriteNum];
     }
 
     if (action == 'shoot') {
-        document.getElementById(id).style.backgroundImage = 'url(images/ ' + shootimages[spriteNum] + ')';
+        document.getElementById(id).src = imagePath + shootimages[spriteNum];
     }
 
     if (action == 'dead') {
-        document.getElementById(id).style.backgroundImage = 'url(images/' + deadimages[0] + ')';
+        document.getElementById(id).src = imagePath + deadimages[0];
 
     }
 }
-
-$(document)
-    .on('mouseover',
-        'div.field',
-        function() {
+/*
+        $(document).on('mouseover', 'img.player', function () {
             $('#shoot_' + this.id).removeClass('hide');
         });
 
-$(document)
-    .on('mouseleave',
-        'div.field',
-        function() {
+        $(document).on('mouseleave', 'img.player', function () {
             $('#shoot_' + this.id).addClass('hide');
         });
 
-$(document)
-    .on('click',
-        '.shootButton',
-        function() {
-            var grabID = this.id.substr(6);
-            var grabX = parseInt($(this).parent().css("left"));
-            var grabY = parseInt($(this).parent().css("top"));
-            //The ID in this case should be the person shooting, change when the
-            //current person's ID can be accessed
-            setSprite('shoot', 'testuser1', 345, 45, grabX + 55, grabY + 55)
-            setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
+        */
 
-            //If user isn't ducked, kill them?
+$(document).on('click', '.shootButton', function () {
+    var grabID = this.id.substr(6);
+    var grabX = parseInt($(this).parent().css("left"));
+    var grabY = parseInt($(this).parent().css("top"));
+    //The ID in this case should be the person shooting, change when the
+    //current person's ID can be accessed
+    setSprite('shoot', 'testuser1', 345, 45, grabX + 55, grabY + 55)
+    setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
 
-        });
+    //If user isn't ducked, kill them?
+
+});
