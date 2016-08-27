@@ -124,6 +124,15 @@ namespace DuckDuckShoot.Models
                 }
             }
 
+            // Remove any disconnected players
+            foreach (Player player in Players)
+            {
+                if (!player.IsActiveUser)
+                {
+                    TurnOutcomes.Add(new Outcome(new Action(Action.ActionType.SHOOT, player, player), false, true));
+                }
+            }
+
             // Perform duck outcomes for players not shot at
             foreach (Player player in duckingPlayers)
             {
@@ -182,11 +191,8 @@ namespace DuckDuckShoot.Models
 
         public void RemovePlayerFromGame(Player player)
         {
-            if (IsMidTurn)
-            {
-                player.Kill();
-                player.IsActiveUser = false;
-            }
+            player.Kill();
+            player.IsActiveUser = false;
         }
 
         /// <summary>
