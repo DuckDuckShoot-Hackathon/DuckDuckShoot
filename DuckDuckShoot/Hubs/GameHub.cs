@@ -25,6 +25,15 @@ namespace DuckDuckShoot.Hubs
         {
             GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 1, 0), 3);
             CurrentGame = GameLobby.CurrentGame;
+
+            // Tell all clients that the game has started
+        }
+
+        public void EndGame()
+        {
+            GameLobby.CurrentGame = null;
+
+            // Tell all clients that the game has ended
         }
 
         public void StartTurn()
