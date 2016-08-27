@@ -65,6 +65,25 @@ namespace DuckDuckShoot.Models
 
             return names;
         }
+        
+        public LobbyState getLobbyState()
+        {
+            LobbyState state = new LobbyState();
 
+            state.Names = Users.Select(u => u.Name).ToArray();
+
+            state.GameInProgress = (CurrentGame != null);
+
+            if (!state.GameInProgress)
+            {
+                state.AliveNames = new string[0];
+            }
+            else
+            {
+                state.AliveNames = CurrentGame.getAlivePlayers().Select(p => p.PlayerUser.Name).ToArray();
+            }
+            
+            return state;
+        }
     }
 }
