@@ -18,7 +18,7 @@ namespace DuckDuckShoot.Hubs
 
         public void StartGame()
         {
-            GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 1, 0), 3);
+            GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 1, 0), (int)Math.Log(GameLobby.Users.Count, 2));
 
             // Tell all clients that the game has started
             Clients.All.gameStart(GameLobby.CurrentGame.Players.Select(p => p.PlayerUser.Name).ToArray());
@@ -91,7 +91,7 @@ namespace DuckDuckShoot.Hubs
         /// </summary>
         public void SendReady()
         {
-            if (!GameLobby.CurrentGame.IsMidTurn)
+            if (GameLobby?.CurrentGame != null && !GameLobby.CurrentGame.IsMidTurn)
             {
                 GameLobby.CurrentGame.UnreadiedPlayers--;
                 if (GameLobby.CurrentGame.UnreadiedPlayers <= 0)
@@ -127,7 +127,7 @@ namespace DuckDuckShoot.Hubs
         {
             string connectionId = Context.ConnectionId;
             // Add this person with their name/check if it exists already.
-            if (GameLobby.getUserFromName(name) != null)
+            if (string.IsNullOrEmpty(name) || GameLobby.getUserFromName(name) != null)
             {
                 // Request a new name
                 return false;

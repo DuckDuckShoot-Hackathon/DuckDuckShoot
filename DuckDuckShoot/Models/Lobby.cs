@@ -72,11 +72,11 @@ namespace DuckDuckShoot.Models
 
             state.Users = Users.ToArray();
 
-            state.GameInProgress = (CurrentGame != null);
+            state.GameInProgress = CurrentGame != null;
 
-            state.Players = null;
+            state.Players = new Player[] {};
 
-            if (state.GameInProgress)
+            if (CurrentGame != null)
             {
                 state.Players = CurrentGame.Players.ToArray();
             }

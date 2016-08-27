@@ -3,8 +3,7 @@
 }
 <div>
     <span >Lobby: </span>
-    <div id="lobby">
-    </div>
+    <div id="lobby"></div>
     <div id="gamesetup">
         <input type="button" id="startGame" value="Start Game!" />
     </div>
@@ -28,7 +27,7 @@
     <script src="~/Scripts/iwc-signalr.js"></script>
     <!--Add script to update the page and send messages.-->
     <script type="text/javascript">
-        var name;
+        var name = "";
         var players = [];
         var users = [];
         var game;
@@ -60,19 +59,23 @@
                 }
             }
             if (isAlive) {
+                $("#actionsLabel").show();
                 $('#actions').append("<input type='button' id='duck' value='DUCK'/>");
                 $("#duck").click(function () { game.server.sendAction("DUCK"); });
             }
             for (var j = 0; j < players.length; j++) {
                 player = players[j];
-                var user = player["PlayerUser"];
-                var encodedName = $('<div />').text(user["Name"]).html();
-                $('#players').append("<span id='player-" + alivePlayers[j] + "'>- " + encodedName + '</span>');
-                if (isAlive) {
-                    $('#actions').append("<br/><input type='button' id='shoot-" + players[j] + "' value='SHOOT " + encodedName + "'/><br/>");
-                    $("#shoot-" + alivePlayers[j]).click({ j: j }, function (e) {
-                        game.server.sendAction("SHOOT " + alivePlayers[e.data.j]);
-                    });
+                if (player["IsAlive"]) {
+                    var user = player["PlayerUser"];
+                    var userName = user["Name"];
+                    var encodedName = $('<div />').text(userName).html();
+                    $('#players').append("<span id='player-" + userName + "'>- " + encodedName + '</span>');
+                    if (isAlive) {
+                        $('#actions').append("<br/><input type='button' id='shoot-" + userName + "' value='SHOOT " + encodedName + "'/>");
+                        $("#shoot-" + userName).click({ userName: userName }, function (e) {
+                            game.server.sendAction("SHOOT " + e.data.userName);
+                        });
+                    }
                 }
             }
         }
@@ -81,12 +84,18 @@
             game = SJ.iwc.SignalR.getHubProxy('game', {
                 client: {
                     addUser: function (user) {
+                        if (name === "") {
+                            return;
+                        }
                         var userName = user["Name"];
                         var encodedName = $('<div />').text(userName).html();
                         $('#lobby').append("<span id='user-" + userName + "'>- " + encodedName + '</span>');
-                        users.push(name);
+                        users.push(user);
                     },
                     removeUser: function (user) {
+                        if (name === "") {
+                            return;
+                        }
                         var userName = user["Name"];
                         $("#user-" + userName).remove();
                         var index = -1;
@@ -100,6 +109,9 @@
                         }
                     },
                     gameStart: function (playerList) {
+                        if (name === "") {
+                            return;
+                        }
                         $("#game").show();
                         $("#gamesetup").hide();
                         $("#outcomes").hide();
@@ -107,20 +119,31 @@
                         populateGame();
                     },
                     turnStart: function (state) {
+                        if (name === "") {
+                            return;
+                        }
                         players = state["players"];
                         populateGame();
                     },
                     getOutcomes: function (outcomes) {
+                        if (name === "") {
+                            return;
+                        }
                         $("#outcomes").empty();
                         $("#outcomes").show();
                         for (var i = 0; i < outcomes.length; i++) {
                             var outcome = outcomes[i];
-                            $('#outcomes').append("<span>" + outcomeToString(outcome) + "</span><br/>");
+                            $('#outcomes').append("<span>- " + outcomeToString(outcome) + "</span>");
                         }
                         game.server.sendReady();
                     },
-                    gameEnd: function (winners) {
-
+                    gameEnd: function () {
+                        if (name === "") {
+                            return;
+                        }
+                        $("#actions").empty();
+                        $("#actionsLabel").hide();
+                        $("#gamesetup").show();
                     }                        
                 }
 
@@ -137,7 +160,6 @@
                         var userName = users[i]["Name"];
                         var encodedName = $('<div />').text(userName).html();
                         $('#lobby').append("<span id='user-" + userName + "'>- " + encodedName + '</span>');
-                        users.push(name);
                     }
                     if (gameInProgress) {
                         game.client.gameStart(state);
@@ -155,15 +177,16 @@
                         setupPage();
                     } else {
                         name = prompt("That name is taken. Please enter a different one.");
-                        game.server.newName().done(handleNameReturn);
+                        game.server.newName(name).done(handleNameReturn);
                     }
                 };
                 game.server.getName()
-                    .done(function (name) {
-                        if (name == undefined) {
+                    .done(function (servername) {
+                        if (servername == undefined) {
                             name = prompt("Enter your name");
                             game.server.newName(name).done(handleNameReturn);
                         } else {
+                            name = servername;
                             setupPage();
                         }
                     });
