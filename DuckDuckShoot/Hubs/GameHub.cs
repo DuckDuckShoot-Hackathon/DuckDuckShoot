@@ -16,6 +16,11 @@ namespace DuckDuckShoot.Hubs
         public Game CurrentGame { get; set; }
         private static readonly ConnectionMapping<string> _connections = new ConnectionMapping<string>();
 
+        public GameHub()
+        {
+            StartLobby();
+        }
+
         public void Send(string name, string message)
         {
             // Call the broadcastMessage method to update clients.
