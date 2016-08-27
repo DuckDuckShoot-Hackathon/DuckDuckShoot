@@ -3,8 +3,10 @@
 }
 <div>
     <input type="text" id="message" />
-    <input type="button" id="sendmessage" value="Send" />
-    <ul id="discussion"></ul>
+    <input type="button" id="sendmessage" value="Send"/>
+    <div id="players"></div>
+    <div id="aliveplayers"></div>
+    <p id="gameInProgress"></p>
 </div>
 @section scripts {
     <!--Reference the SignalR library. -->
@@ -21,39 +23,41 @@
                 // Declare a proxy to reference the hub.
                 var game = SJ.iwc.SignalR.getHubProxy('game', {
                     client: {
-                        // Create a function that the hub can call to broadcast messages.
-                        broadcastMessage: function (name, message) {
-                            // Html encode display name and message.
-                            var encodedName = $('<div />').text(name).html();
-                            var encodedMsg = $('<div />').text(message).html();
-                            // Add the message to the page.
-                            $('#discussion').append('<li><strong>' + encodedName
-                                + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
+                        aFunction: function () {
+                            // Code here
                         }
                     }
                 });
                 // Set initial focus to message input box.
                 $('#message').focus();
+
+                var setupPage = function () {
+                    game.server.getCurrentLobbyState().done(function (state) {
+                        var names = state["names"];
+                        var aliveNames = state["aliveNames"];
+                        var inProgress = state["gameInProgress"] ? "Game In Progress" : "Game Not In Progress";
+                        $('#players').append("<p id='playersHeader'>Players:" + (names.length === 0 ? " None" : "") + "</p>");
+                        for (var i = 0; i < names.length; i++) {
+                            var encodedName = $('<div />').text(names[i]).html();
+                            $('#players').append("<p id='player-" + names[i] + "'>- " + encodedName + '</p>');
+                        }
+                        $('#aliveplayers').append("<p id='AlivelayersHeader'>Alive Players:" + (aliveNames.length === 0 ? " None" : "") + "</p>");
+                        for (var j = 0; j < aliveNames.length; j++) {
+                            var encodedAliveName = $('<div />').text(aliveNames[j]).html();
+                            $('#aliveplayers').append("<p id='player-" + aliveNames[j] + "'>- " + encodedAliveName + '</p>');
+                        }
+                        $('#gameInProgress').text("Progress Status: " + inProgress);
+                    });
+                }
                 // Start the connection.
                 SJ.iwc.SignalR.start().done(function () {
                     console.log("Connection to Server Successful");
-                    var handleNameReturn;
-                    var getName = function() {
-                        game.server.newName(prompt("That name is taken. Please use a different one.")).done(handleNameReturn);
-                    }
-                    var setupPage = function() {
-                        $('#sendmessage').click(function () {
-                            // Call the Send method on the hub.
-                            game.server.send($('#message').val());
-                            // Clear text box and reset focus for next comment.
-                            $('#message').val('').focus();
-                        });
-                    }
-                    handleNameReturn = function (success) {
+                    var handleNameReturn = function (success) {
                         if (success) {
                             setupPage();
                         } else {
-                            getName();
+                            game.server.newName(prompt("That name is taken. Please enter a different one."))
+                                .done(handleNameReturn);
                         }
                     };
                     game.server.getName()

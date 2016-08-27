@@ -15,12 +15,6 @@ namespace DuckDuckShoot.Hubs
         public Lobby GameLobby => Lobby.LobbySingleton;
         public Game CurrentGame { get; set; }
 
-        public void Send(string message)
-        {
-            // Call the broadcastMessage method to update clients.
-            Clients.All.broadcastMessage(GameLobby.getUserFromConnectionId(Context.ConnectionId).Name, message);
-        }
-
         public void StartGame()
         {
             GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 1, 0), 3);
@@ -122,7 +116,7 @@ namespace DuckDuckShoot.Hubs
             return true;
         }
 
-        public LobbyState getCurrentLobbyState()
+        public LobbyState GetCurrentLobbyState()
         {
             return GameLobby.getLobbyState();
         }
