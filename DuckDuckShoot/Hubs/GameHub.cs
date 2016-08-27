@@ -13,12 +13,10 @@ namespace DuckDuckShoot.Hubs
     public class GameHub : Hub
     {
         public Lobby GameLobby => Lobby.LobbySingleton;
-        public Game CurrentGame { get; set; }
 
         public void StartGame()
         {
             GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 1, 0), 3);
-            CurrentGame = GameLobby.CurrentGame;
 
             // Tell all clients that the game has started
         }
@@ -33,8 +31,8 @@ namespace DuckDuckShoot.Hubs
         public void StartTurn()
         {
             // Begin the timer to the end of the turn
-            CurrentGame.StartTurn();
-            Timer t = new Timer(ProcessGameTurn, null, CurrentGame.TurnTime, CurrentGame.TurnTime);
+            GameLobby.CurrentGame.StartTurn();
+            Timer t = new Timer(ProcessGameTurn, null, GameLobby.CurrentGame.TurnTime, GameLobby.CurrentGame.TurnTime);
 
             // Tell all clients the turn is starting
         }
@@ -50,7 +48,7 @@ namespace DuckDuckShoot.Hubs
             // String format: [DUCK | SHOOT target] 
             
             Game.Action action = null;
-            Player actor = CurrentGame.getPlayerFromConnectionId(Context.ConnectionId);
+            Player actor = GameLobby.CurrentGame.getPlayerFromConnectionId(Context.ConnectionId);
 
             if (actor == null)
             {
@@ -64,11 +62,11 @@ namespace DuckDuckShoot.Hubs
             }
             else if (tokens[0].Equals("SHOOT"))
             {
-                Player target = CurrentGame.getPlayerFromName(tokens[1]);
+                Player target = GameLobby.CurrentGame.getPlayerFromName(tokens[1]);
                 action = new Game.Action(Game.Action.ActionType.SHOOT, actor, target);
             }
 
-            CurrentGame.AddPlayerAction(actor, action);                                   
+            GameLobby.CurrentGame.AddPlayerAction(actor, action);                                   
         }
         
         /// <summary>
@@ -76,10 +74,10 @@ namespace DuckDuckShoot.Hubs
         /// </summary>
         public void SendReady()
         {
-            if (!CurrentGame.IsMidTurn)
+            if (!GameLobby.CurrentGame.IsMidTurn)
             {
-                CurrentGame.UnreadiedPlayers--;
-                if (CurrentGame.UnreadiedPlayers <= 0)
+                GameLobby.CurrentGame.UnreadiedPlayers--;
+                if (GameLobby.CurrentGame.UnreadiedPlayers <= 0)
                 {
                     StartTurn();
                 }
@@ -88,10 +86,10 @@ namespace DuckDuckShoot.Hubs
 
         public void ProcessGameTurn(object state)
         {
-            CurrentGame.ProcessTurn();
+            GameLobby.CurrentGame.ProcessTurn();
 
             // List of outcomes
-            List<Game.Outcome> Outcomes = CurrentGame.TurnOutcomes;
+            List<Game.Outcome> Outcomes = GameLobby.CurrentGame.TurnOutcomes;
 
             // Send outcomes to clients
             
@@ -126,6 +124,11 @@ namespace DuckDuckShoot.Hubs
             string connectionId = Context.ConnectionId;
 
             //Remove this user using the connection id
+            if (GameLobby.CurrentGame != null)
+            {
+                GameLobby.CurrentGame.RemovePlayerFromGame(GameLobby.CurrentGame.getPlayerFromConnectionId(connectionId));
+            }
+            GameLobby.Users.Remove(GameLobby.getUserFromConnectionId(connectionId));
             return base.OnDisconnected(stopCalled);
         }
     }
