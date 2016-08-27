@@ -35,6 +35,27 @@ namespace DuckDuckShoot.Hubs
             Timer t = new Timer(ProcessGameTurn, null, CurrentGame.TurnTime, CurrentGame.TurnTime);
         }
 
+        public void SendAction(string actionString)
+        {
+
+            // String format: [DUCK | SHOOT target] 
+            Game.Action action = null;
+            Player target;
+
+            string[] tokens = actionString.Split(' ');
+            if (tokens[0].Equals("DUCK"))
+            {
+
+                action = new Game.Action(Game.Action.ActionType.DUCK, null, null);
+            }
+            else if (tokens[0].Equals("SHOOT"))
+            {
+                Player actor;
+                action = new Game.Action(Game.Action.ActionType.SHOOT, null, null);
+            }
+                        
+        }
+
         public void ProcessGameTurn(object state)
         {
             CurrentGame.ProcessTurn();
