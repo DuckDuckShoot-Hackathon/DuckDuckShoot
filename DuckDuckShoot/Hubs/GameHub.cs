@@ -33,6 +33,8 @@ namespace DuckDuckShoot.Hubs
             // Begin the timer to the end of the turn
             CurrentGame.StartTurn();
             Timer t = new Timer(ProcessGameTurn, null, CurrentGame.TurnTime, CurrentGame.TurnTime);
+
+            // Tell all clients the turn is starting
         }
 
         /// <summary>
@@ -64,8 +66,7 @@ namespace DuckDuckShoot.Hubs
                 action = new Game.Action(Game.Action.ActionType.SHOOT, actor, target);
             }
 
-            CurrentGame.AddPlayerAction(actor, action);
-                                              
+            CurrentGame.AddPlayerAction(actor, action);                                   
         }
         
         /// <summary>

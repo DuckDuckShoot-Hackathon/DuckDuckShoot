@@ -137,6 +137,43 @@ namespace DuckDuckShoot.Models
             UnreadiedPlayers = Players.Count;
         }
 
+        public int NumPlayersLeft()
+        {
+            int playersAlive = 0;
+            foreach (Player player in Players)
+            {
+                if (player.IsAlive)
+                {
+                    playersAlive++;
+                }
+            }
+            return playersAlive;
+        }
+
+        public bool IsGameOver()
+        {
+            return (NumPlayersLeft() <= 1);
+        }
+
+        public Player GetWinner()
+        {
+            if (!IsGameOver())
+            {
+                return null;
+            }
+
+            foreach (Player player in Players)
+            {
+                if (player.IsAlive)
+                {
+                    return Player;
+                }
+            }
+
+            return null;
+
+        }
+
         /// <summary>
         /// Get the actions performed this turn, in order
         /// </summary>
