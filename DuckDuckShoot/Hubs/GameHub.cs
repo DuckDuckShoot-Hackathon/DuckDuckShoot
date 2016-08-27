@@ -19,6 +19,9 @@ namespace DuckDuckShoot.Hubs
             GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 1, 0), 3);
 
             // Tell all clients that the game has started
+            Clients.All.gameStart();
+
+            StartTurn();
         }
 
         public void EndGame()
@@ -26,15 +29,21 @@ namespace DuckDuckShoot.Hubs
             GameLobby.CurrentGame = null;
 
             // Tell all clients that the game has ended
+            var winners = new string[1] { "memes" };
+            Clients.All.gameEnd();
         }
 
         public void StartTurn()
         {
             // Begin the timer to the end of the turn
             GameLobby.CurrentGame.StartTurn();
-            Timer t = new Timer(ProcessGameTurn, null, GameLobby.CurrentGame.TurnTime, GameLobby.CurrentGame.TurnTime);
 
             // Tell all clients the turn is starting
+            Clients.All.turnStart(GameLobby.getLobbyState());
+
+            Timer t = new Timer(ProcessGameTurn, null, GameLobby.CurrentGame.TurnTime, GameLobby.CurrentGame.TurnTime);
+
+            
         }
 
         /// <summary>
@@ -89,9 +98,10 @@ namespace DuckDuckShoot.Hubs
             GameLobby.CurrentGame.ProcessTurn();
 
             // List of outcomes
-            List<Game.Outcome> Outcomes = GameLobby.CurrentGame.TurnOutcomes;
+            List<Game.Outcome> outcomes = GameLobby.CurrentGame.TurnOutcomes;
 
             // Send outcomes to clients
+            Clients.All.getOutcomes(outcomes.ToArray());
             
         }
 

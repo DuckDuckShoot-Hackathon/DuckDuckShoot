@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace DuckDuckShoot.Models
 {
@@ -215,8 +216,11 @@ namespace DuckDuckShoot.Models
         {
             public enum ActionType { SHOOT, DUCK };
 
+            [JsonProperty("ActType")]
             public ActionType ActType { get; }
+            [JsonProperty("Actor")]
             public Player Actor { get; }
+            [JsonProperty("Target")]
             public Player Target { get; }
 
             public Action(ActionType type, Player actor, Player target)
@@ -229,8 +233,11 @@ namespace DuckDuckShoot.Models
 
         public class Outcome
         {
+            [JsonProperty("ActCommand")]
             public Action ActCommand { get; }
+            [JsonProperty("TargetDucked")]
             public bool TargetDucked { get; }
+            [JsonProperty("TargetDied")]
             public bool TargetDied { get; }
             
             public Outcome(Action actCommand, bool targetDucked, bool targetDied)
