@@ -7,6 +7,20 @@ namespace DuckDuckShoot.Models
 {
     public class Lobby
     {
+        private static Lobby lobbySingleton = null;
+
+        public static Lobby LobbySingleton
+        {
+            get
+            {
+                if (lobbySingleton == null)
+                {
+                    lobbySingleton = new Lobby();
+                }
+                return lobbySingleton;
+            }
+        }
+
         public List<User> Users { get; }
         public Game CurrentGame { get; set; }
 

@@ -12,24 +12,14 @@ namespace DuckDuckShoot.Hubs
     [HubName("game")]
     public class GameHub : Hub
     {
-        public Lobby GameLobby { get; set; }
+        public Lobby GameLobby { get { return Lobby.LobbySingleton; } }
         public Game CurrentGame { get; set; }
         private static readonly ConnectionMapping<string> _connections = new ConnectionMapping<string>();
-
-        public GameHub()
-        {
-            StartLobby();
-        }
 
         public void Send(string name, string message)
         {
             // Call the broadcastMessage method to update clients.
             Clients.All.broadcastMessage(name, message);
-        }
-
-        public void StartLobby()
-        {
-            GameLobby = new Lobby();
         }
 
         public void StartGame()
