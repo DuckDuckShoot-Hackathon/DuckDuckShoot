@@ -31,14 +31,14 @@ namespace DuckDuckShoot.Models
             // Clear the actions for each player
             TurnActions.Clear();
 
-            // Begin the timer
+            // Begin the timer to the end of the turn
             Timer t = new Timer(ProcessTurn, null, TurnTime, TurnTime);
 
         }
 
-        public void AddPlayerAction()
+        public void AddPlayerAction(Player player, Action action)
         {
-
+            TurnActions.Add(player, action);
         }
 
         public void ProcessTurn(object state)
