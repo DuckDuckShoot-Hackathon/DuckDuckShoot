@@ -31,10 +31,14 @@ namespace DuckDuckShoot.Hubs
         public void StartTurn()
         {
             // Begin the timer to the end of the turn
-            CurrentGame.ResetTurn();
+            CurrentGame.StartTurn();
             Timer t = new Timer(ProcessGameTurn, null, CurrentGame.TurnTime, CurrentGame.TurnTime);
         }
 
+        /// <summary>
+        /// Method for client to call to send their action for a turn
+        /// </summary>
+        /// <param name="actionString"> the formatted string of the action to take</param>
         public void SendAction(string actionString)
         {
             string[] tokens = actionString.Split(' ');
@@ -59,7 +63,24 @@ namespace DuckDuckShoot.Hubs
                 Player target = CurrentGame.getPlayerFromName(tokens[1]);
                 action = new Game.Action(Game.Action.ActionType.SHOOT, actor, target);
             }
+
+            CurrentGame.AddPlayerAction(actor, action);
                                               
+        }
+        
+        /// <summary>
+        /// Method the client sends to indicate it is ready for the next turn
+        /// </summary>
+        public void SendReady()
+        {
+            if (!CurrentGame.IsMidTurn)
+            {
+                CurrentGame.UnreadiedPlayers--;
+                if (CurrentGame.UnreadiedPlayers <= 0)
+                {
+                    StartTurn();
+                }
+            }
         }
 
         public void ProcessGameTurn(object state)
