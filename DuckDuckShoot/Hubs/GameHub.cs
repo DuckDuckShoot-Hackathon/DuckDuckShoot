@@ -32,7 +32,7 @@ namespace DuckDuckShoot.Hubs
 
             // Tell all clients that the game has ended
             var winners = new string[1] { "memes" };
-            Clients.All.gameEnd();
+            Clients.All.gameEnd(winners);
         }
 
         public void StartTurn()
@@ -113,9 +113,11 @@ namespace DuckDuckShoot.Hubs
             
         }
 
-        public void BroadcastChatMessage(User user, string message)
+        public void BroadcastChatMessage(string message)
         {
             // Send message on to all other users
+            User user = GameLobby.getUserFromConnectionId(Context.ConnectionId);
+            Clients.All.receiveChatMessage(user, message);
         }
 
         public string GetName()

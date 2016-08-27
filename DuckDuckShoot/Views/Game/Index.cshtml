@@ -8,12 +8,18 @@
         <input type="button" id="startGame" value="Start Game!" />
     </div>
     <div id="game" hidden>
+        <span id="timerLabel">Timer: <b id="timerValue"></b></span>
         <span id="playersLabel">Players: </span>
         <div id="players"></div>
         <span id="outcomesLabel">Outcomes: </span>
         <div id="outcomes"></div>
         <span id="actionsLabel">Actions: </span>
         <div id="actions"></div>
+    </div>
+    <div id="chat">
+        <div id="chatLog"></div>
+        <input type="text" id="chatText" />
+        <input type="button" id="chatSend" value="Send" />
     </div>
 </div>
 @section scripts {
@@ -31,6 +37,8 @@
         var players = [];
         var users = [];
         var game;
+        var roundTimer = 0;
+        var roundTimerInterval;
         var outcomeToString = function(outcome) {
             var command = outcome["ActCommand"];
             if (command["ActType"] === 0) {
@@ -123,6 +131,17 @@
                             return;
                         }
                         players = state["players"];
+
+                        roundTimer = 60;
+                        $("#timerValue").text(roundTimer);
+                        roundTimerInterval = window.setInterval(function () {
+                            if (roundTimer <= 0) {
+                                window.clearInterval(roundTimerInterval);
+                            }
+                            roundTimer--;
+                            $("#timerValue").text(roundTimer);
+                        }, 1000);
+
                         populateGame();
                     },
                     getOutcomes: function (outcomes) {
@@ -137,14 +156,17 @@
                         }
                         game.server.sendReady();
                     },
-                    gameEnd: function () {
+                    gameEnd: function (winners) {
                         if (name === "") {
                             return;
                         }
                         $("#actions").empty();
                         $("#actionsLabel").hide();
                         $("#gamesetup").show();
-                    }                        
+                    },
+                    receiveChatMessage: function (user, message) {
+                        $("#chatLog").append("<span><b>" + user["Name"] + "</b>: " + message + " </span>");
+                    }
                 }
 
             });
@@ -165,8 +187,15 @@
                         game.client.gameStart(state);
                     }
                 });
+
+                // Bind start game button handler
                 $("#startGame").click(function() {
                     game.server.startGame();
+                });
+
+                // Bind chat button handler
+                $("#chatSend").click(function () {
+                    game.server.broadcastChatMessage($("#chatText").val());
                 });
             }
             // Start the connection.
