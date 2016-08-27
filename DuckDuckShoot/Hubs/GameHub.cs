@@ -28,11 +28,13 @@ namespace DuckDuckShoot.Hubs
 
         public void EndGame()
         {
+
+            var winners = GameLobby.CurrentGame.getAlivePlayers();
+
             GameLobby.CurrentGame = null;
 
             // Tell all clients that the game has ended
-            var winners = new string[1] { "memes" };
-            Clients.All.gameEnd(winners);
+            Clients.All.gameEnd(winners.ToArray());
         }
 
         public void StartTurn()

@@ -135,10 +135,10 @@
                         roundTimer = 60;
                         $("#timerValue").text(roundTimer);
                         roundTimerInterval = window.setInterval(function () {
+                            roundTimer--;
                             if (roundTimer <= 0) {
                                 window.clearInterval(roundTimerInterval);
-                            }
-                            roundTimer--;
+                            }                            
                             $("#timerValue").text(roundTimer);
                         }, 1000);
 
@@ -160,6 +160,13 @@
                         if (name === "") {
                             return;
                         }
+                        var winnerString = "";
+                        var sep = "";
+                        for (var i = 0; i < winners.length; ++i) {
+                            winnerString += sep + winners[i]["PlayerUser"]["Name"];
+                            sep = ", and ";
+                        }
+                        $('#outcomes').append("<span>- Winner/s: " + winnerString + "</span>");
                         $("#actions").empty();
                         $("#actionsLabel").hide();
                         $("#gamesetup").show();

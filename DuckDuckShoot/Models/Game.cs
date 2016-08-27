@@ -171,25 +171,6 @@ namespace DuckDuckShoot.Models
             return (NumPlayersLeft() <= 1);
         }
 
-        public Player GetWinner()
-        {
-            if (!IsGameOver())
-            {
-                return null;
-            }
-
-            foreach (Player player in Players)
-            {
-                if (player.IsAlive)
-                {
-                    return player;
-                }
-            }
-
-            return null;
-
-        }
-
         public void RemovePlayerFromGame(Player player)
         {
             player.Kill();
