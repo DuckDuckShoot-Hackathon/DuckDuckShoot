@@ -28,15 +28,11 @@ namespace DuckDuckShoot.Models
             users.ForEach(user => Players.Add(new Player(user, InitialDucks)));       
         }
 
-        public void StartTurn()
+        public void ResetTurn()
         {
             // Clear the actions for each player
             TurnActions.Clear();
             TurnOutcomes.Clear();
-
-            // Begin the timer to the end of the turn
-            Timer t = new Timer(ProcessTurn, null, TurnTime, TurnTime);
-
         }
 
         public void AddPlayerAction(Player player, Action action)
@@ -54,7 +50,7 @@ namespace DuckDuckShoot.Models
             AddPlayerAction(actor, action);
         }
 
-        public void ProcessTurn(object state)
+        public void ProcessTurn()
         {
             var actions = GetActionList();
             TurnOutcomes.Clear();
