@@ -13,6 +13,9 @@ namespace DuckDuckShoot.Models
 
         public List<Player> Players { get; }
 
+        public bool IsMidTurn { get; set; }
+        public int UnreadiedPlayers { get; set; }
+
         public Dictionary<Player, Action> TurnActions { get; }
         public List<Outcome> TurnOutcomes { get; }
 
@@ -23,6 +26,7 @@ namespace DuckDuckShoot.Models
             Players = new List<Player>();
             TurnActions = new Dictionary<Player, Action>();
             TurnOutcomes = new List<Outcome>();
+            IsMidTurn = false;
 
             // Add all users in the lobby to the game
             users.ForEach(user => Players.Add(new Player(user, InitialDucks)));       
@@ -52,11 +56,13 @@ namespace DuckDuckShoot.Models
             return null;
         }
 
-        public void ResetTurn()
+        public void StartTurn()
         {
             // Clear the actions for each player
             TurnActions.Clear();
             TurnOutcomes.Clear();
+            IsMidTurn = true;
+            UnreadiedPlayers = 0;
         }
 
         public void AddPlayerAction(Player player, Action action)
@@ -126,6 +132,9 @@ namespace DuckDuckShoot.Models
                     TurnOutcomes.Add(new Outcome(new Action(Action.ActionType.DUCK, player, player), true, false));
                 }
             }
+
+            IsMidTurn = false;
+            UnreadiedPlayers = Players.Count;
         }
 
         /// <summary>
