@@ -5,6 +5,7 @@
     <div id="players"></div>
     <div id="aliveplayers"></div>
     <span id="gameInProgress"></span>
+    <input type="button" id="startGame" value="Start Game!"/>
     <div id="game">
         <span>Outcomes: </span>
         <div id="outcomes"></div>
@@ -42,7 +43,16 @@
                         players.splice(index, 1);
                     },
                     gameStart: function (playerList) {
-
+                        console.log(playerList);
+                        alivePlayers = playerList;
+                        $('#aliveplayers').empty();
+                        $('#aliveplayers').append("<span id='alivePlayersHeader'>Alive Players:" + (alivePlayers.length === 0 ? " None" : "") + "</span>");
+                        $('#actions').append("<input type='button' id='duck' value='DUCK'/><br/>");
+                        for (var j = 0; j < alivePlayers.length; j++) {
+                            var encodedAliveName = $('<div />').text(alivePlayers[j]).html();
+                            $('#aliveplayers').append("<span id='aliveplayer-" + alivePlayers[j] + "'>- " + encodedAliveName + '</span>');
+                            $('#actions').append("<input type='button' id='aliveplayer-shoot-" + alivePlayers[j] + "' value='SHOOT " + encodedAliveName + "'/><br/>");
+                        }
                     },
                     turnStart: function (state) {
 
@@ -69,12 +79,15 @@
                         var encodedName = $('<div />').text(players[i]).html();
                         $('#players').append("<span id='player-" + players[i] + "'>- " + encodedName + '</span>');
                     }
-                    $('#aliveplayers').append("<span id='AlivelayersHeader'>Alive Players:" + (alivePlayers.length === 0 ? " None" : "") + "</span>");
+                    $('#aliveplayers').append("<span id='alivePlayersHeader'>Alive Players:" + (alivePlayers.length === 0 ? " None" : "") + "</span>");
                     for (var j = 0; j < alivePlayers.length; j++) {
                         var encodedAliveName = $('<div />').text(alivePlayers[j]).html();
                         $('#aliveplayers').append("<span id='aliveplayer-" + alivePlayers[j] + "'>- " + encodedAliveName + '</span>');
                     }
                     $('#gameInProgress').text("Progress Status: " + (gameInProgress ? "Game In Progress" : "Game Not In Progress"));
+                });
+                $("#startGame").click(function() {
+                    game.server.startGame();
                 });
             }
             // Start the connection.
