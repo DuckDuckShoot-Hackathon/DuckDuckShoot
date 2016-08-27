@@ -41,19 +41,29 @@
                     var getName = function() {
                         game.server.newName(prompt("That name is taken. Please use a different one.")).done(handleNameReturn);
                     }
+                    var setupPage = function() {
+                        $('#sendmessage').click(function () {
+                            // Call the Send method on the hub.
+                            game.server.send($('#message').val());
+                            // Clear text box and reset focus for next comment.
+                            $('#message').val('').focus();
+                        });
+                    }
                     handleNameReturn = function (success) {
                         if (success) {
-                            $('#sendmessage').click(function () {
-                                // Call the Send method on the hub.
-                                game.server.send($('#message').val());
-                                // Clear text box and reset focus for next comment.
-                                $('#message').val('').focus();
-                            });
+                            setupPage();
                         } else {
                             getName();
                         }
                     };
-                    game.server.newName(prompt("Enter your name")).done(handleNameReturn);
+                    game.server.getName()
+                        .done(function (name) {
+                            if (name == undefined) {
+                                game.server.newName(prompt("Enter your name")).done(handleNameReturn);
+                            } else {
+                                setupPage();
+                            }
+                        });
                 });
             });
     </script>

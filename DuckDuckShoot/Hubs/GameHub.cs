@@ -94,6 +94,11 @@ namespace DuckDuckShoot.Hubs
             
         }
 
+        public string GetName()
+        {
+            return GameLobby.getUserFromConnectionId(Context.ConnectionId)?.Name;
+        }
+
         public bool NewName(string name)
         {
             string connectionId = Context.ConnectionId;
