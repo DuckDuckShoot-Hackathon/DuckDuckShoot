@@ -113,6 +113,11 @@ namespace DuckDuckShoot.Hubs
             return true;
         }
 
+        public LobbyState getCurrentLobbyState()
+        {
+            return GameLobby.getLobbyState();
+        }
+
         public override Task OnDisconnected(bool stopCalled)
         {
             string connectionId = Context.ConnectionId;
