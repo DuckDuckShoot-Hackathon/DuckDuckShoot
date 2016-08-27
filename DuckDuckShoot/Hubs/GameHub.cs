@@ -47,7 +47,7 @@ namespace DuckDuckShoot.Hubs
             // Tell all clients the turn is starting
             Clients.All.turnStart(GameLobby.getLobbyState());
 
-            Timer t = new Timer(ProcessGameTurn, null, GameLobby.CurrentGame.TurnTime, GameLobby.CurrentGame.TurnTime);
+            Timer t = new Timer(ProcessGameTurn, null, GameLobby.CurrentGame.TurnTime, TimeSpan.FromMilliseconds(-1));
 
             
         }

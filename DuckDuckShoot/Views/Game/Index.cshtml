@@ -43,15 +43,20 @@
                         players.splice(index, 1);
                     },
                     gameStart: function (playerList) {
-                        console.log(playerList);
                         alivePlayers = playerList;
                         $('#aliveplayers').empty();
                         $('#aliveplayers').append("<span id='alivePlayersHeader'>Alive Players:" + (alivePlayers.length === 0 ? " None" : "") + "</span>");
                         $('#actions').append("<input type='button' id='duck' value='DUCK'/><br/>");
+                        $("#duck").click(function() {
+                            game.server.sendAction("DUCK");
+                        })
                         for (var j = 0; j < alivePlayers.length; j++) {
                             var encodedAliveName = $('<div />').text(alivePlayers[j]).html();
                             $('#aliveplayers').append("<span id='aliveplayer-" + alivePlayers[j] + "'>- " + encodedAliveName + '</span>');
-                            $('#actions').append("<input type='button' id='aliveplayer-shoot-" + alivePlayers[j] + "' value='SHOOT " + encodedAliveName + "'/><br/>");
+                            $('#actions').append("<input type='button' id='shoot-" + alivePlayers[j] + "' value='SHOOT " + encodedAliveName + "'/><br/>");
+                            $("#shoot-" + alivePlayers[j]).click({j: j}, function (e) {
+                                game.server.sendAction("SHOOT " + alivePlayers[e.data.j]);
+                            });
                         }
                     },
                     turnStart: function (state) {
