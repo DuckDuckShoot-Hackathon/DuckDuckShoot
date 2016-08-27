@@ -22,6 +22,11 @@ namespace DuckDuckShoot.Hubs
             Clients.All.broadcastMessage(name, message);
         }
 
+        public void StartLobby()
+        {
+            GameLobby = new Lobby();
+        }
+
         public void StartGame()
         {
             GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 1, 0), 3);
@@ -70,6 +75,7 @@ namespace DuckDuckShoot.Hubs
             List<Game.Outcome> Outcomes = CurrentGame.TurnOutcomes;
 
             // Send outcomes to clients
+            
         }
 
         public override Task OnConnected()
