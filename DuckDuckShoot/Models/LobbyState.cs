@@ -7,12 +7,12 @@ using Newtonsoft.Json;
 namespace DuckDuckShoot.Models
 {
     public class LobbyState
-    {
-        [JsonProperty("names")]
-        public string[] Names { get; set; }
+    {        
+        [JsonProperty("players")]
+        public Player[] Players { get; set; }
+        [JsonProperty("users")]
+        public User[] Users { get; set; }
         [JsonProperty("gameInProgress")]
         public bool GameInProgress { get; set; }
-        [JsonProperty("aliveNames")]
-        public string[] AliveNames { get; set; }
     }
 }
