@@ -137,17 +137,23 @@ namespace DuckDuckShoot.Models
             UnreadiedPlayers = Players.Count;
         }
 
-        public int NumPlayersLeft()
+        public List<Player> getAlivePlayers()
         {
-            int playersAlive = 0;
+            var result = new List<Player>();
             foreach (Player player in Players)
             {
                 if (player.IsAlive)
                 {
-                    playersAlive++;
+                    result.Add(player);
                 }
             }
-            return playersAlive;
+
+            return result;
+        }
+
+        public int NumPlayersLeft()
+        {
+            return getAlivePlayers().Count();
         }
 
         public bool IsGameOver()
