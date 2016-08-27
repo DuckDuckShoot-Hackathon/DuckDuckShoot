@@ -11,5 +11,10 @@ namespace DuckDuckShoot.Models
 
         public string ConnectionId { get; set; }
 
+        public User(string name, string connectionId)
+        {
+            Name = name;
+            ConnectionId = connectionId;
+        }
     }
 }

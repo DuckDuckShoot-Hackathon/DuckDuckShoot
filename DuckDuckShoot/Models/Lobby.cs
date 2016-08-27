@@ -42,6 +42,18 @@ namespace DuckDuckShoot.Models
             return null;
         }
 
+        public User getUserFromConnectionId(string connId)
+        {
+            foreach (User user in Users)
+            {
+                if (user.ConnectionId.Equals(connId))
+                {
+                    return user;
+                }
+            }
+            return null;
+        }
+
         public List<string> getTakenNames()
         {
             var names = new List<string>();

@@ -166,7 +166,7 @@ namespace DuckDuckShoot.Models
             {
                 if (player.IsAlive)
                 {
-                    return Player;
+                    return player;
                 }
             }
 

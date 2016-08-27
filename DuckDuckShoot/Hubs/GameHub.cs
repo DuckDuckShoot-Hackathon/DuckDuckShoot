@@ -98,6 +98,12 @@ namespace DuckDuckShoot.Hubs
         {
             string connectionId = Context.ConnectionId;
             // Add this person with their name/check if it exists already.
+            if (GameLobby.getUserFromName(name) != null)
+            {
+                // Request a new name
+                return false;
+            }
+            GameLobby.Users.Add(new User(name, connectionId));
             // Returns whether or not the name is valid
             return true;
         }
