@@ -7,19 +7,19 @@ namespace DuckDuckShoot.Models
 {
     public class Game
     {
-        public enum Actions { DUCK, SHOOT };
-
         public int InitialDucks { get; }
 
         public List<Player> Players { get; }
 
         public bool TurnCounting { get; set; }
+        public Dictionary<Player, Action> TurnActions { get; }
         public DateTime TurnEnd { get; set; }
 
         public Game(List<User> users, int initialDucks)
         {
             InitialDucks = initialDucks;
             Players = new List<Player>();
+            TurnActions = new Dictionary<Player, Action>();
 
             // Add all users in the lobby to the game
             users.ForEach(user => Players.Add(new Player(user, InitialDucks)));
@@ -44,6 +44,19 @@ namespace DuckDuckShoot.Models
 
         }
 
-        
+        public class Action
+        {
+            public enum ActionType { SHOOT, DUCK };
+
+            public ActionType ActType { get; }
+            public Player Target { get; }
+
+            public Action(ActionType type, Player target)
+            {
+                this.ActType = type;
+                this.Target = target;
+            }
+        }
+
     }
 }
