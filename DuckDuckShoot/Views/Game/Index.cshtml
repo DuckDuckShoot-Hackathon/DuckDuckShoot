@@ -44,7 +44,7 @@
                         $('#aliveplayers').append("<p id='AlivelayersHeader'>Alive Players:" + (aliveNames.length === 0 ? " None" : "") + "</p>");
                         for (var j = 0; j < aliveNames.length; j++) {
                             var encodedAliveName = $('<div />').text(aliveNames[j]).html();
-                            $('#aliveplayers').append("<p id='player-" + aliveNames[j] + "'>- " + encodedAliveName + '</p>');
+                            $('#aliveplayers').append("<p id='aliveplayer-" + aliveNames[j] + "'>- " + encodedAliveName + '</p>');
                         }
                         $('#gameInProgress').text("Progress Status: " + inProgress);
                     });
