@@ -113,6 +113,11 @@ namespace DuckDuckShoot.Hubs
             
         }
 
+        public void BroadcastChatMessage(User user, string message)
+        {
+            // Send message on to all other users
+        }
+
         public string GetName()
         {
             return GameLobby.getUserFromConnectionId(Context.ConnectionId)?.Name;
@@ -127,8 +132,9 @@ namespace DuckDuckShoot.Hubs
                 // Request a new name
                 return false;
             }
-            GameLobby.Users.Add(new User(name, connectionId));
-            Clients.Others.addPlayer(name);
+            User newUser = new User(name, connectionId);
+            GameLobby.Users.Add(newUser);
+            Clients.Others.addPlayer(newUser);
             // Returns whether or not the name is valid
             return true;
         }
@@ -147,7 +153,7 @@ namespace DuckDuckShoot.Hubs
             {
                 GameLobby.CurrentGame.RemovePlayerFromGame(GameLobby.CurrentGame.getPlayerFromConnectionId(connectionId));
             }
-            Clients.Others.removePlayer(GameLobby.getUserFromConnectionId(connectionId).Name);
+            Clients.Others.removePlayer(GameLobby.getUserFromConnectionId(connectionId));
             GameLobby.Users.Remove(GameLobby.getUserFromConnectionId(connectionId));
             return base.OnDisconnected(stopCalled);
         }
