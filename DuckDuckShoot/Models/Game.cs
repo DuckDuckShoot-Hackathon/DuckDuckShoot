@@ -144,7 +144,7 @@ namespace DuckDuckShoot.Models
             }
 
             IsMidTurn = false;
-            UnreadiedPlayers = Players.Count;
+            UnreadiedPlayers = getAlivePlayers().Count;
         }
 
         public List<Player> getAlivePlayers()
@@ -194,6 +194,11 @@ namespace DuckDuckShoot.Models
         {
             player.Kill();
             player.IsActiveUser = false;
+
+            if (!IsMidTurn)
+            {
+                UnreadiedPlayers--;
+            }
         }
 
         /// <summary>
