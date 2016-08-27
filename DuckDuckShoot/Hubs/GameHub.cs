@@ -19,7 +19,7 @@ namespace DuckDuckShoot.Hubs
             GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 1, 0), 3);
 
             // Tell all clients that the game has started
-            Clients.All.gameStart();
+            Clients.All.gameStart(GameLobby.CurrentGame.Players.Select(p => p.PlayerUser.Name).ToArray());
 
             StartTurn();
         }
