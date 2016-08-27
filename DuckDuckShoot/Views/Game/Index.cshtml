@@ -17,74 +17,80 @@
     <script src="~/Scripts/iwc-signalr.js"></script>
     <!--Add script to update the page and send messages.-->
     <script type="text/javascript">
-            $(function () {
-                // Declare a proxy to reference the hub.
-                var game = SJ.iwc.SignalR.getHubProxy('game', {
-                    client: {
-                        addPlayer: function (name) {
-                            $("#playersHeader").text("Players:");
-                            var encodedName = $('<div />').text(name).html();
-                            $('#players').append("<p id='player-" + name + "'>- " + encodedName + '</p>');
-                        },
-                        removePlayer: function(name) {
-                            $("#player-" + name).remove();
-                        },
-                        gameStart: function () {
+        var players = [];
+        var alivePlayers = [];
+        var gameInProgress = [];
+        $(function () {
+            // Declare a proxy to reference the hub.
+            var game = SJ.iwc.SignalR.getHubProxy('game', {
+                client: {
+                    addPlayer: function (name) {
+                        $("#playersHeader").text("Players:");
+                        var encodedName = $('<div />').text(name).html();
+                        $('#players').append("<p id='player-" + name + "'>- " + encodedName + '</p>');
+                        players.push(name);
+                    },
+                    removePlayer: function(name) {
+                        $("#player-" + name).remove();
+                        var index = players.indexOf(name);
+                        players.splice(index, 1);
+                    },
+                    gameStart: function () {
 
-                        },
-                        turnStart: function (state) {
+                    },
+                    turnStart: function (state) {
 
-                        },
-                        getOutcomes: function (outcomes) {
+                    },
+                    getOutcomes: function (outcomes) {
 
-                        },
-                        gameEnd: function (winners) {
+                    },
+                    gameEnd: function (winners) {
 
-                        }                        
-                    }
-
-                });
-                // Set initial focus to message input box.
-                $('#message').focus();
-
-                var setupPage = function () {
-                    game.server.getCurrentLobbyState().done(function (state) {
-                        var names = state["names"];
-                        var aliveNames = state["aliveNames"];
-                        var inProgress = state["gameInProgress"] ? "Game In Progress" : "Game Not In Progress";
-                        $('#players').append("<p id='playersHeader'>Players:" + (names.length === 0 ? " None" : "") + "</p>");
-                        for (var i = 0; i < names.length; i++) {
-                            var encodedName = $('<div />').text(names[i]).html();
-                            $('#players').append("<p id='player-" + names[i] + "'>- " + encodedName + '</p>');
-                        }
-                        $('#aliveplayers').append("<p id='AlivelayersHeader'>Alive Players:" + (aliveNames.length === 0 ? " None" : "") + "</p>");
-                        for (var j = 0; j < aliveNames.length; j++) {
-                            var encodedAliveName = $('<div />').text(aliveNames[j]).html();
-                            $('#aliveplayers').append("<p id='aliveplayer-" + aliveNames[j] + "'>- " + encodedAliveName + '</p>');
-                        }
-                        $('#gameInProgress').text("Progress Status: " + inProgress);
-                    });
+                    }                        
                 }
-                // Start the connection.
-                SJ.iwc.SignalR.start().done(function () {
-                    console.log("Connection to Server Successful");
-                    var handleNameReturn = function (success) {
-                        if (success) {
-                            setupPage();
-                        } else {
-                            game.server.newName(prompt("That name is taken. Please enter a different one."))
-                                .done(handleNameReturn);
-                        }
-                    };
-                    game.server.getName()
-                        .done(function (name) {
-                            if (name == undefined) {
-                                game.server.newName(prompt("Enter your name")).done(handleNameReturn);
-                            } else {
-                                setupPage();
-                            }
-                        });
-                });
+
             });
+            // Set initial focus to message input box.
+            $('#message').focus();
+
+            var setupPage = function () {
+                game.server.getCurrentLobbyState().done(function (state) {
+                    players = state["names"];
+                    alivePlayers = state["aliveNames"];
+                    gameInProgress = state["gameInProgress"];
+                    $('#players').append("<p id='playersHeader'>Players:" + (players.length === 0 ? " None" : "") + "</p>");
+                    for (var i = 0; i < players.length; i++) {
+                        var encodedName = $('<div />').text(players[i]).html();
+                        $('#players').append("<p id='player-" + players[i] + "'>- " + encodedName + '</p>');
+                    }
+                    $('#aliveplayers').append("<p id='AlivelayersHeader'>Alive Players:" + (alivePlayers.length === 0 ? " None" : "") + "</p>");
+                    for (var j = 0; j < alivePlayers.length; j++) {
+                        var encodedAliveName = $('<div />').text(alivePlayers[j]).html();
+                        $('#aliveplayers').append("<p id='aliveplayer-" + alivePlayers[j] + "'>- " + encodedAliveName + '</p>');
+                    }
+                    $('#gameInProgress').text("Progress Status: " + (gameInProgress ? "Game In Progress" : "Game Not In Progress"));
+                });
+            }
+            // Start the connection.
+            SJ.iwc.SignalR.start().done(function () {
+                console.log("Connection to Server Successful");
+                var handleNameReturn = function (success) {
+                    if (success) {
+                        setupPage();
+                    } else {
+                        game.server.newName(prompt("That name is taken. Please enter a different one."))
+                            .done(handleNameReturn);
+                    }
+                };
+                game.server.getName()
+                    .done(function (name) {
+                        if (name == undefined) {
+                            game.server.newName(prompt("Enter your name")).done(handleNameReturn);
+                        } else {
+                            setupPage();
+                        }
+                    });
+            });
+        });
     </script>
 }
