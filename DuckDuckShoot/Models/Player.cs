@@ -52,5 +52,11 @@ namespace DuckDuckShoot.Models
             }
         }
 
+        public override string ToString()
+        {
+            return String.Format("{0}: {1} - {2} ducks left", PlayerUser.Name,
+                IsAlive ? "Alive" : "Dead", NumDucks);
+        }
+
     }
 }

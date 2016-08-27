@@ -19,5 +19,10 @@ namespace DuckDuckShoot.Models
             Name = name;
             ConnectionId = connectionId;
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
