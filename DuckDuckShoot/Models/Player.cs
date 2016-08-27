@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Newtonsoft.Json;
 
 namespace DuckDuckShoot.Models
 {
@@ -9,15 +10,19 @@ namespace DuckDuckShoot.Models
     {
 
         // The User in the lobby that controls this player
+        [JsonProperty("PlayerUser")]
         public User PlayerUser { get; }
+        [JsonProperty("IsActiveUser")]
         public bool IsActiveUser { get; set; }
 
         // Whether this Player is alive
         private bool isAlive;
+        [JsonProperty("IsAlive")]
         public bool IsAlive { get { return isAlive; } }
 
         // The number of ducks a player has left
         private int numDucks;
+        [JsonProperty("NumDucks")]
         public int NumDucks { get { return numDucks; } }
 
         public Player(User user, int numDucks)
