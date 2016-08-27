@@ -35,6 +35,12 @@ namespace DuckDuckShoot.Hubs
 
         public void StartTurn()
         {
+            if (GameLobby.CurrentGame.IsGameOver())
+            {
+                EndGame();
+                return;
+            }
+            
             // Begin the timer to the end of the turn
             GameLobby.CurrentGame.StartTurn();
 
