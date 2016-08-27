@@ -2,14 +2,18 @@
     ViewBag.Title = "Home Page";
 }
 <div>
-    <div id="players"></div>
-    <div id="aliveplayers"></div>
-    <span id="gameInProgress"></span>
-    <input type="button" id="startGame" value="Start Game!"/>
-    <div id="game">
-        <span>Outcomes: </span>
+    <span >Lobby: </span>
+    <div id="lobby">
+    </div>
+    <div id="gamesetup">
+        <input type="button" id="startGame" value="Start Game!" />
+    </div>
+    <div id="game" hidden>
+        <span id="playersLabel">Players: </span>
+        <div id="players"></div>
+        <span id="outcomesLabel">Outcomes: </span>
         <div id="outcomes"></div>
-        <span>Actions: </span>
+        <span id="actionsLabel">Actions: </span>
         <div id="actions"></div>
     </div>
 </div>
@@ -24,46 +28,96 @@
     <script src="~/Scripts/iwc-signalr.js"></script>
     <!--Add script to update the page and send messages.-->
     <script type="text/javascript">
+        var name;
         var players = [];
-        var alivePlayers = [];
-        var gameInProgress = [];
+        var users = [];
+        var game;
+        var outcomeToString = function(outcome) {
+            var command = outcome["ActCommand"];
+            if (command["ActType"] === 0) {
+                var outcomeStr = command["Actor"]["PlayerUser"]["Name"] +
+                    " shot " +
+                    command["Target"]["PlayerUser"]["Name"];
+                if (outcome["TargetDucked"]) {
+                    return outcomeStr + " but they ducked.";
+                } else {
+                    return outcomeStr;
+                }
+            } else {
+                return command["Actor"]["PlayerUser"]["Name"] + " ducked (but wasn't shot at).";
+            }
+        };
+        var populateGame = function () {
+            $('#players').empty();
+            $('#actions').empty();
+            var isAlive = true;
+            var player;
+            for (var i = 0; i < players.length; i++) {
+                player = players[i];
+                if (player["PlayerUser"]["Name"] === name && !player["IsAlive"]) {
+                    isAlive = false;
+                    $("#actionsLabel").hide();
+                }
+            }
+            if (isAlive) {
+                $('#actions').append("<input type='button' id='duck' value='DUCK'/>");
+                $("#duck").click(function () { game.server.sendAction("DUCK"); });
+            }
+            for (var j = 0; j < players.length; j++) {
+                player = players[j];
+                var user = player["PlayerUser"];
+                var encodedName = $('<div />').text(user["Name"]).html();
+                $('#players').append("<span id='player-" + alivePlayers[j] + "'>- " + encodedName + '</span>');
+                if (isAlive) {
+                    $('#actions').append("<br/><input type='button' id='shoot-" + players[j] + "' value='SHOOT " + encodedName + "'/><br/>");
+                    $("#shoot-" + alivePlayers[j]).click({ j: j }, function (e) {
+                        game.server.sendAction("SHOOT " + alivePlayers[e.data.j]);
+                    });
+                }
+            }
+        }
         $(function () {
             // Declare a proxy to reference the hub.
-            var game = SJ.iwc.SignalR.getHubProxy('game', {
+            game = SJ.iwc.SignalR.getHubProxy('game', {
                 client: {
-                    addPlayer: function (name) {
-                        $("#playersHeader").text("Players:");
-                        var encodedName = $('<div />').text(name).html();
-                        $('#players').append("<span id='player-" + name + "'>- " + encodedName + '</span>');
-                        players.push(name);
+                    addUser: function (user) {
+                        var userName = user["Name"];
+                        var encodedName = $('<div />').text(userName).html();
+                        $('#lobby').append("<span id='user-" + userName + "'>- " + encodedName + '</span>');
+                        users.push(name);
                     },
-                    removePlayer: function(name) {
-                        $("#player-" + name).remove();
-                        var index = players.indexOf(name);
-                        players.splice(index, 1);
-                    },
-                    gameStart: function (playerList) {
-                        alivePlayers = playerList;
-                        $('#aliveplayers').empty();
-                        $('#aliveplayers').append("<span id='alivePlayersHeader'>Alive Players:" + (alivePlayers.length === 0 ? " None" : "") + "</span>");
-                        $('#actions').append("<input type='button' id='duck' value='DUCK'/><br/>");
-                        $("#duck").click(function() {
-                            game.server.sendAction("DUCK");
-                        })
-                        for (var j = 0; j < alivePlayers.length; j++) {
-                            var encodedAliveName = $('<div />').text(alivePlayers[j]).html();
-                            $('#aliveplayers').append("<span id='aliveplayer-" + alivePlayers[j] + "'>- " + encodedAliveName + '</span>');
-                            $('#actions').append("<input type='button' id='shoot-" + alivePlayers[j] + "' value='SHOOT " + encodedAliveName + "'/><br/>");
-                            $("#shoot-" + alivePlayers[j]).click({j: j}, function (e) {
-                                game.server.sendAction("SHOOT " + alivePlayers[e.data.j]);
-                            });
+                    removeUser: function (user) {
+                        var userName = user["Name"];
+                        $("#user-" + userName).remove();
+                        var index = -1;
+                        for (var i = 0; i < users.length; i++) {
+                            if (users[i]["Name"] === userName) {
+                                index = i;
+                            }
+                        }
+                        if (index !== -1) {
+                            users.splice(index, 1);
                         }
                     },
+                    gameStart: function (playerList) {
+                        $("#game").show();
+                        $("#gamesetup").hide();
+                        $("#outcomes").hide();
+                        players = playerList;
+                        populateGame();
+                    },
                     turnStart: function (state) {
-
+                        players = state["players"];
+                        populateGame();
                     },
                     getOutcomes: function (outcomes) {
-                        console.log(outcomes);
+                        $("#outcomes").empty();
+                        $("#outcomes").show();
+                        for (var i = 0; i < outcomes.length; i++) {
+                            var outcome = outcomes[i];
+                            $('#outcomes').append("<span>" + outcomeToString(outcome) + "</span><br/>");
+                        }
+                        game.server.sendReady();
                     },
                     gameEnd: function (winners) {
 
@@ -76,20 +130,18 @@
 
             var setupPage = function () {
                 game.server.getCurrentLobbyState().done(function (state) {
-                    players = state["names"];
-                    alivePlayers = state["aliveNames"];
-                    gameInProgress = state["gameInProgress"];
-                    $('#players').append("<span id='playersHeader'>Players:" + (players.length === 0 ? " None" : "") + "</span>");
-                    for (var i = 0; i < players.length; i++) {
-                        var encodedName = $('<div />').text(players[i]).html();
-                        $('#players').append("<span id='player-" + players[i] + "'>- " + encodedName + '</span>');
+                    users = state["users"];
+                    players = state["players"];
+                    var gameInProgress = state["gameInProgress"];
+                    for (var i = 0; i < users.length; i++) {
+                        var userName = users[i]["Name"];
+                        var encodedName = $('<div />').text(userName).html();
+                        $('#lobby').append("<span id='user-" + userName + "'>- " + encodedName + '</span>');
+                        users.push(name);
                     }
-                    $('#aliveplayers').append("<span id='alivePlayersHeader'>Alive Players:" + (alivePlayers.length === 0 ? " None" : "") + "</span>");
-                    for (var j = 0; j < alivePlayers.length; j++) {
-                        var encodedAliveName = $('<div />').text(alivePlayers[j]).html();
-                        $('#aliveplayers').append("<span id='aliveplayer-" + alivePlayers[j] + "'>- " + encodedAliveName + '</span>');
+                    if (gameInProgress) {
+                        game.client.gameStart(state);
                     }
-                    $('#gameInProgress').text("Progress Status: " + (gameInProgress ? "Game In Progress" : "Game Not In Progress"));
                 });
                 $("#startGame").click(function() {
                     game.server.startGame();
@@ -102,14 +154,15 @@
                     if (success) {
                         setupPage();
                     } else {
-                        game.server.newName(prompt("That name is taken. Please enter a different one."))
-                            .done(handleNameReturn);
+                        name = prompt("That name is taken. Please enter a different one.");
+                        game.server.newName().done(handleNameReturn);
                     }
                 };
                 game.server.getName()
                     .done(function (name) {
                         if (name == undefined) {
-                            game.server.newName(prompt("Enter your name")).done(handleNameReturn);
+                            name = prompt("Enter your name");
+                            game.server.newName(name).done(handleNameReturn);
                         } else {
                             setupPage();
                         }
