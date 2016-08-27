@@ -26,3 +26,32 @@ textarea {
 span {
     display: block;
 }
+
+body { padding: 2em; }
+#container { width: 800px; height: 600px; position: relative;background-image: url('images/bg.png');}
+#center { width: 10px; height: 10px; position: absolute; left: 400px; top: 300px; background: #000; border-radius: 50%; }
+.field { position: absolute; }
+
+.field {
+    width:  110px;
+    height: 110px;
+    /*line-height: 93px;*/
+    text-align: center;
+
+}
+
+.ducked {
+    background-image: 'url(../images/duck.png)';!important
+}
+
+.username {
+margin-top:-15px;
+}
+
+.hide {
+    display:none;
+}
+
+.moveUp{
+    margin-top:-40px;
+}
