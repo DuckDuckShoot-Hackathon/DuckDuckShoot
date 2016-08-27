@@ -14,6 +14,8 @@ namespace DuckDuckShoot.Hubs
     {
         public Lobby GameLobby => Lobby.LobbySingleton;
 
+        private Timer turnTimer;
+
         public void StartGame()
         {
             GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 1, 0), 3);
@@ -47,7 +49,7 @@ namespace DuckDuckShoot.Hubs
             // Tell all clients the turn is starting
             Clients.All.turnStart(GameLobby.getLobbyState());
 
-            Timer t = new Timer(ProcessGameTurn, null, GameLobby.CurrentGame.TurnTime, TimeSpan.FromMilliseconds(-1));
+             turnTimer = new Timer(ProcessGameTurn, null, GameLobby.CurrentGame.TurnTime, TimeSpan.FromMilliseconds(-1));
 
             
         }
