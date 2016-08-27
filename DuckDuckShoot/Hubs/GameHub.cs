@@ -37,23 +37,29 @@ namespace DuckDuckShoot.Hubs
 
         public void SendAction(string actionString)
         {
+            string[] tokens = actionString.Split(' ');
 
             // String format: [DUCK | SHOOT target] 
+            
             Game.Action action = null;
-            Player target;
+            Player actor = CurrentGame.getPlayerFromConnectionId(Context.ConnectionId);
 
-            string[] tokens = actionString.Split(' ');
+            if (actor == null)
+            {
+                return;
+            }
+
+            
             if (tokens[0].Equals("DUCK"))
             {
-
-                action = new Game.Action(Game.Action.ActionType.DUCK, null, null);
+                action = new Game.Action(Game.Action.ActionType.DUCK, actor, actor);
             }
             else if (tokens[0].Equals("SHOOT"))
             {
-                Player actor;
-                action = new Game.Action(Game.Action.ActionType.SHOOT, null, null);
+                Player target = CurrentGame.getPlayerFromName(tokens[1]);
+                action = new Game.Action(Game.Action.ActionType.SHOOT, actor, target);
             }
-                        
+                                              
         }
 
         public void ProcessGameTurn(object state)

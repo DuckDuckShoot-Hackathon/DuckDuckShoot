@@ -28,6 +28,30 @@ namespace DuckDuckShoot.Models
             users.ForEach(user => Players.Add(new Player(user, InitialDucks)));       
         }
 
+        public Player getPlayerFromName(string name)
+        {
+            foreach (Player player in Players)
+            {
+                if (player.PlayerUser.Name.Equals(name))
+                {
+                    return player;
+                }
+            }
+            return null;
+        }
+
+        public Player getPlayerFromConnectionId(string ConnId)
+        {
+            foreach (Player player in Players)
+            {
+                if (player.PlayerUser.ConnectionId.Equals(ConnId))
+                {
+                    return player;
+                }
+            }
+            return null;
+        }
+
         public void ResetTurn()
         {
             // Clear the actions for each player
@@ -50,6 +74,9 @@ namespace DuckDuckShoot.Models
             AddPlayerAction(actor, action);
         }
 
+        /// <summary>
+        /// Process the actions taken in a turn, updating the TurnOutcomes with the outcomes of these actions
+        /// </summary>
         public void ProcessTurn()
         {
             var actions = GetActionList();
