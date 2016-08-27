@@ -14,6 +14,7 @@ namespace DuckDuckShoot.Models
         public List<Player> Players { get; }
 
         public Dictionary<Player, Action> TurnActions { get; }
+        public List<Outcome> TurnOutcomes { get; }
 
         public Game(List<User> users, TimeSpan turnTime, int initialDucks)
         {
@@ -21,6 +22,7 @@ namespace DuckDuckShoot.Models
             TurnTime = turnTime;
             Players = new List<Player>();
             TurnActions = new Dictionary<Player, Action>();
+            TurnOutcomes = new List<Outcome>();
 
             // Add all users in the lobby to the game
             users.ForEach(user => Players.Add(new Player(user, InitialDucks)));       
@@ -30,6 +32,7 @@ namespace DuckDuckShoot.Models
         {
             // Clear the actions for each player
             TurnActions.Clear();
+            TurnOutcomes.Clear();
 
             // Begin the timer to the end of the turn
             Timer t = new Timer(ProcessTurn, null, TurnTime, TurnTime);
@@ -45,12 +48,20 @@ namespace DuckDuckShoot.Models
             }
         }
 
+        public void AddPlayerAction(Player actor, Action.ActionType actType, Player target)
+        {
+            Action action = new Action(actType, actor, target);
+            AddPlayerAction(actor, action);
+        }
+
         public void ProcessTurn(object state)
         {
             var actions = GetActionList();
+            TurnOutcomes.Clear();
             
             // Figure out who is ducking
             var duckingPlayers = new HashSet<Player>();
+            var ducksUsed = new HashSet<Player>();
             foreach (Action action in actions)
             {
                 // Duck only if they have Ducks left
@@ -62,16 +73,34 @@ namespace DuckDuckShoot.Models
                 }
             }
 
-            // Perform shoot actions
+            // Perform shoot actions and generate outcomes
             foreach (Action action in actions)
             {
                 if (action.ActType == Action.ActionType.SHOOT)
                 {
                     // Only kill the player if they are alive and not ducking
-                    if (action.Target.IsAlive && !duckingPlayers.Contains(action.Target))
+                    if (action.Target.IsAlive)
                     {
-                        action.Target.Kill();
+                        if (duckingPlayers.Contains(action.Target))
+                        {
+                            TurnOutcomes.Add(new Outcome(action, true, false));
+                            ducksUsed.Add(action.Target);
+                        } else
+                        {
+                            action.Target.Kill();
+                            TurnOutcomes.Add(new Outcome(action, false, true));
+                        }
+                        
                     }
+                }
+            }
+
+            // Perform duck outcomes for players not shot at
+            foreach (Player player in duckingPlayers)
+            {
+                if (!ducksUsed.Contains(player))
+                {
+                    TurnOutcomes.Add(new Outcome(new Action(Action.ActionType.DUCK, player, player), true, false));
                 }
             }
         }
@@ -105,6 +134,20 @@ namespace DuckDuckShoot.Models
                 this.Actor = actor;
                 this.ActType = type;
                 this.Target = target;
+            }
+        }
+
+        public class Outcome
+        {
+            public Action ActCommand { get; }
+            public bool TargetDucked { get; }
+            public bool TargetDied { get; }
+            
+            public Outcome(Action actCommand, bool targetDucked, bool targetDied)
+            {
+                ActCommand = actCommand;
+                TargetDucked = targetDucked;
+                TargetDied = targetDied;
             }
         }
 
