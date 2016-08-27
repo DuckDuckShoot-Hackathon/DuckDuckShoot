@@ -62,7 +62,8 @@ namespace DuckDuckShoot.Hubs
         /// <param name="actionString"> the formatted string of the action to take</param>
         public void SendAction(string actionString)
         {
-            string[] tokens = actionString.Split(' ');
+            char[] sep = {' '};
+            string[] tokens = actionString.Split(sep, 2);
 
             // String format: [DUCK | SHOOT target] 
             
