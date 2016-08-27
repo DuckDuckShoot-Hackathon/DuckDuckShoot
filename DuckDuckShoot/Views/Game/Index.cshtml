@@ -4,7 +4,6 @@
 <div>
     <input type="text" id="message" />
     <input type="button" id="sendmessage" value="Send" />
-    <input type="hidden" id="displayname" />
     <ul id="discussion"></ul>
 </div>
 @section scripts {
@@ -33,16 +32,15 @@
                         }
                     }
                 });
-                // Get the user name and store it to prepend to messages.
-                $('#displayname').val(prompt('Enter your name:', ''));
                 // Set initial focus to message input box.
                 $('#message').focus();
                 // Start the connection.
                 SJ.iwc.SignalR.start().done(function () {
                     console.log("Connection to Server Successful");
+                    game.server.newName(prompt("Enter your name"));
                     $('#sendmessage').click(function () {
                         // Call the Send method on the hub.
-                        game.server.send($('#displayname').val(), $('#message').val());
+                        game.server.send($('#message').val());
                         // Clear text box and reset focus for next comment.
                         $('#message').val('').focus();
                     });

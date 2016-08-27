@@ -12,14 +12,13 @@ namespace DuckDuckShoot.Hubs
     [HubName("game")]
     public class GameHub : Hub
     {
-        public Lobby GameLobby { get { return Lobby.LobbySingleton; } }
+        public Lobby GameLobby => Lobby.LobbySingleton;
         public Game CurrentGame { get; set; }
-        private static readonly ConnectionMapping<string> _connections = new ConnectionMapping<string>();
 
-        public void Send(string name, string message)
+        public void Send(string message)
         {
             // Call the broadcastMessage method to update clients.
-            Clients.All.broadcastMessage(name, message);
+            Clients.All.broadcastMessage(Context.ConnectionId, message);
         }
 
         public void StartGame()
@@ -73,92 +72,20 @@ namespace DuckDuckShoot.Hubs
             
         }
 
-        public override Task OnConnected()
+        public bool NewName(string name)
         {
-            string name = Context.User.Identity.Name;
-
-            _connections.Add(name, Context.ConnectionId);
-
-            return base.OnConnected();
+            string connectionId = Context.ConnectionId;
+            // Add this person with their name/check if it exists already.
+            // Returns whether or not the name is valid
+            return true;
         }
 
         public override Task OnDisconnected(bool stopCalled)
         {
-            string name = Context.User.Identity.Name;
+            string connectionId = Context.ConnectionId;
 
-            _connections.Remove(name, Context.ConnectionId);
-
+            //Remove this user using the connection id
             return base.OnDisconnected(stopCalled);
-        }
-
-        public override Task OnReconnected()
-        {
-            string name = Context.User.Identity.Name;
-
-            if (!_connections.GetConnections(name).Contains(Context.ConnectionId))
-            {
-                _connections.Add(name, Context.ConnectionId);
-            }
-
-            return base.OnReconnected();
-        }
-    }
-
-    public class ConnectionMapping<T>
-    {
-        private readonly Dictionary<T, HashSet<string>> _connections = new Dictionary<T, HashSet<string>>();
-
-        public int Count => _connections.Count;
-
-        public void Add(T key, string connectionId)
-        {
-            lock (_connections)
-            {
-                HashSet<string> connections;
-                if (!_connections.TryGetValue(key, out connections))
-                {
-                    connections = new HashSet<string>();
-                    _connections.Add(key, connections);
-                }
-
-                lock (connections)
-                {
-                    connections.Add(connectionId);
-                }
-            }
-        }
-
-        public IEnumerable<string> GetConnections(T key)
-        {
-            HashSet<string> connections;
-            if (_connections.TryGetValue(key, out connections))
-            {
-                return connections;
-            }
-
-            return Enumerable.Empty<string>();
-        }
-
-        public void Remove(T key, string connectionId)
-        {
-            lock (_connections)
-            {
-                HashSet<string> connections;
-                if (!_connections.TryGetValue(key, out connections))
-                {
-                    return;
-                }
-
-                lock (connections)
-                {
-                    connections.Remove(connectionId);
-
-                    if (connections.Count == 0)
-                    {
-                        _connections.Remove(key);
-                    }
-                }
-            }
         }
     }
 }
