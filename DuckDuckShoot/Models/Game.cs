@@ -144,10 +144,10 @@ namespace DuckDuckShoot.Models
             }
 
             IsMidTurn = false;
-            UnreadiedPlayers = getAlivePlayers().Count;
+            UnreadiedPlayers = GetAlivePlayers().Count;
         }
 
-        public List<Player> getAlivePlayers()
+        public List<Player> GetAlivePlayers()
         {
             var result = new List<Player>();
             foreach (Player player in Players)
@@ -163,12 +163,53 @@ namespace DuckDuckShoot.Models
 
         public int NumPlayersLeft()
         {
-            return getAlivePlayers().Count();
+            return GetAlivePlayers().Count();
         }
 
         public bool IsGameOver()
         {
             return (NumPlayersLeft() <= 1);
+        }
+
+        public List<Player> GetWinners()
+        {
+            List<Player> alivePlayers = GetAlivePlayers();
+            if (alivePlayers.Count >= 1)
+            {
+                return alivePlayers;
+            }
+
+            List<Player> tieResult = new List<Player>();
+
+            DateTime? lastDiedTime = null;
+            foreach (Player player in Players)
+            {
+                if (player.DeathTime != null)
+                {
+                    if (lastDiedTime == null)
+                    {
+                        lastDiedTime = player.DeathTime;
+                        tieResult.Add(player);
+                    }
+                    else if (player.DeathTime - lastDiedTime >= TimeSpan.Zero)
+                    {
+                        // This player died at or after the latest found death time
+                        if (player.DeathTime - lastDiedTime > TimeSpan.FromSeconds(5))
+                        {
+                            // Player died at least 5 seconds more recently - i.e. not in the same round
+                            tieResult.Clear();
+                            lastDiedTime = player.DeathTime;
+                            tieResult.Add(player);
+                        } else
+                        {
+                            // Player died in the same round as the most recent time
+                            tieResult.Add(player);
+                        }
+                    }
+                }
+            }
+
+            return tieResult;
         }
 
         public void RemovePlayerFromGame(Player player)

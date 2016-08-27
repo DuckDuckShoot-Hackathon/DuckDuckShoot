@@ -19,6 +19,9 @@ namespace DuckDuckShoot.Models
         private bool isAlive;
         [JsonProperty("IsAlive")]
         public bool IsAlive { get { return isAlive; } }
+        // The time at which the player died
+        [JsonProperty("DeathTime")]
+        public DateTime? DeathTime { get; set; }
 
         // The number of ducks a player has left
         private int numDucks;
@@ -31,6 +34,7 @@ namespace DuckDuckShoot.Models
             IsActiveUser = true;
             PlayerUser = user;
             this.numDucks = numDucks;
+            DeathTime = null;
         }
 
         /// <summary>
@@ -39,6 +43,7 @@ namespace DuckDuckShoot.Models
         public void Kill()
         {
             isAlive = false;
+            DeathTime = DateTime.Now;
         }
 
         /// <summary>
