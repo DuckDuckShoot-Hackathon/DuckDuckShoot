@@ -113,13 +113,14 @@ $(function() {
                 $("#outcomes").hide();
                 players = playerList;
                 populateGame();
+                console.log("Starting new game...");
             },
             turnStart: function(state) {
                 if (name === "") {
                     return;
                 }
                 players = state["players"];
-
+                console.log("Starting new turn...");
                 roundTimer = 60;
                 $("#timerValue").text(roundTimer);
                 roundTimerInterval = window.setInterval(function() {
