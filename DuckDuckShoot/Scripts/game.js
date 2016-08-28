@@ -109,18 +109,19 @@ $(function() {
                 if (name === "") {
                     return;
                 }
+                console.log("Starting new game...");
                 $("#game").show();
                 $("#gamesetup").hide();
                 $("#outcomes").hide();
                 players = playerList;
                 populateGame();
             },
-            turnStart: function(state) {
+            turnStart: function (state) {
+                console.log("Starting new turn...");
                 if (name === "") {
                     return;
                 }
                 players = state["players"];
-
                 roundTimer = 60;
                 $("#timerValue").text(roundTimer);
                 roundTimerInterval = window.setInterval(function() {

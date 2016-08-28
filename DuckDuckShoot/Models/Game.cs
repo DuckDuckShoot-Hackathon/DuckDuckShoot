@@ -116,7 +116,7 @@ namespace DuckDuckShoot.Models
             // Only alive players can add actions
             if (player.IsAlive)
             {
-                TurnActions.Add(player, action);
+                TurnActions[player] = action;
             }
         }
 

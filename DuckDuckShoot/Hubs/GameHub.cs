@@ -43,6 +43,10 @@ namespace DuckDuckShoot.Hubs
 
         public void StartTurn()
         {
+            if (GameLobby.CurrentGame == null)
+            {
+                return;
+            }
             if (GameLobby.CurrentGame.IsGameOver())
             {
                 EndGame();
@@ -60,7 +64,8 @@ namespace DuckDuckShoot.Hubs
             }
 
             // Tell all clients the turn is starting
-            Clients.All.turnStart(GameLobby.getLobbyState());
+            LobbyState state = GameLobby.getLobbyState();
+            Clients.All.turnStart(state);
 
             turnTimer = new Timer(ProcessGameTurn, null, GameLobby.CurrentGame.TurnTime, TimeSpan.FromMilliseconds(-1));
 
