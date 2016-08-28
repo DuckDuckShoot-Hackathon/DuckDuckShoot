@@ -162,6 +162,9 @@ $(function() {
                     return;
                 }
                 $("#suddenDeathBtn").show();
+                console.log("delete users state");
+                deleteAllUsers();
+                populateGame();
             },
             receiveChatMessage: function (user, message) {
                 if (!loaded) {
