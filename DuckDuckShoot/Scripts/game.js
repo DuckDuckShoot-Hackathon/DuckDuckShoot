@@ -4,6 +4,7 @@ var users = [];
 var game;
 var roundTimer = 0;
 var roundTimerInterval;
+var loaded = false;
 var outcomeToString = function(outcome) {
     var command = outcome["ActCommand"];
     if (command["ActType"] === 0) {
@@ -37,7 +38,6 @@ var populateGame = function() {
             var encodedName = $('<div />').text(userName).html();
             $('#players').append("<span id='player-" + userName + "'>- " + encodedName + '</span>');
             if (isAlive) {
-                deleteUser(userName);
                 addPlayer(userName);
             }
         }
@@ -49,7 +49,10 @@ $(function() {
     {
         client: {
             addUser: function(user) {
-                if (name === "") {
+                if (!loaded) {
+                    if (user["Name"] === name) {
+                        loaded = true;
+                    }
                     return;
                 }
                 var userName = user["Name"];
@@ -58,7 +61,7 @@ $(function() {
                 users.push(user);
             },
             removeUser: function(user) {
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 var userName = user["Name"];
@@ -74,7 +77,7 @@ $(function() {
                 }
             },
             gameStart: function(playerList) {
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 console.log("Starting new game...");
@@ -86,7 +89,7 @@ $(function() {
             },
             turnStart: function (state) {
                 console.log("Starting new turn...");
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 players = state["players"];
@@ -100,11 +103,11 @@ $(function() {
                         $("#timerValue").text(roundTimer);
                     },
                     1000);
-
+                deleteAllUsers();
                 populateGame();
             },
             getOutcomes: function(outcomes) {
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 $("#outcomes").empty();
@@ -116,7 +119,7 @@ $(function() {
                 game.server.sendReady();
             },
             gameEnd: function(winners) {
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 var winnerString = "";
@@ -130,9 +133,15 @@ $(function() {
                 $("#gamesetup").show();
             },
             suddenDeathStart: function () {
+                if (!loaded) {
+                    return;
+                }
                 $("#suddenDeathBtn").show();
             },
-            receiveChatMessage: function(user, message) {
+            receiveChatMessage: function (user, message) {
+                if (!loaded) {
+                    return;
+                }
                 $("#chatLog").append("<span><b>" + user["Name"] + "</b>: " + message + " </span>");
                 $('#chat').scrollTop($('#chat')[0].scrollHeight);
             }
@@ -284,6 +293,13 @@ function addPlayer(username) {
     }
 
 }
+function deleteAllUsers() {
+  
+
+    $('.field').remove();
+
+    distributePlayers();
+}
 
 function deleteUser(username) {
     $('#' + username)
@@ -387,16 +403,6 @@ function setSprite(action, id, currentX, currentY, targetX, targetY) {
 
     }
 }
-/*
-        $(document).on('mouseover', 'img.player', function () {
-            $('#shoot_' + this.id).removeClass('hide');
-        });
-
-        $(document).on('mouseleave', 'img.player', function () {
-            $('#shoot_' + this.id).addClass('hide');
-        });
-
-        */
 
 $(document).on('click', '.shootButton', function () {
     var grabID = this.id.substr(6);
