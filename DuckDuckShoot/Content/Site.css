@@ -52,11 +52,13 @@ span {
     white-space: nowrap;
 }
 
+
 #container { width: 800px; height: 600px; position: relative; display: inline-block; background-image: url('images/bg.png');
              vertical-align: top;
     word-wrap: break-word;
 }
-#center { width: 10px; height: 10px; position: absolute; left: 400px; top: 300px; background: #000; border-radius: 50%; }
+#center { width: 10px; height: 10px; position: absolute; left: 400px; top: 300px; border-radius: 50%; }
+
 .field { position: absolute; }
 
 .field {

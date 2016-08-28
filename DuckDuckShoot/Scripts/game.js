@@ -360,7 +360,8 @@ function deleteAllUsers() {
     distributePlayers();
 }
 
-function deleteUser(username) {
+function deleteUser(player) {
+    var username = player["PlayerUser"]["Name"];
     $('#' + username)
     .attr('deleting', 'true')
     .css({
