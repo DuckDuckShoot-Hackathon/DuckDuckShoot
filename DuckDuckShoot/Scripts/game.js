@@ -4,6 +4,7 @@ var users = [];
 var game;
 var roundTimer = 0;
 var roundTimerInterval;
+var loaded = false;
 var outcomeToString = function(outcome) {
     var command = outcome["ActCommand"];
     if (command["ActType"] === 0) {
@@ -49,7 +50,10 @@ $(function() {
     {
         client: {
             addUser: function(user) {
-                if (name === "") {
+                if (!loaded) {
+                    if (user["Name"] === name) {
+                        loaded = true;
+                    }
                     return;
                 }
                 var userName = user["Name"];
@@ -58,7 +62,7 @@ $(function() {
                 users.push(user);
             },
             removeUser: function(user) {
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 var userName = user["Name"];
@@ -74,7 +78,7 @@ $(function() {
                 }
             },
             gameStart: function(playerList) {
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 console.log("Starting new game...");
@@ -86,7 +90,7 @@ $(function() {
             },
             turnStart: function (state) {
                 console.log("Starting new turn...");
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 players = state["players"];
@@ -104,7 +108,7 @@ $(function() {
                 populateGame();
             },
             getOutcomes: function(outcomes) {
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 $("#outcomes").empty();
@@ -116,7 +120,7 @@ $(function() {
                 game.server.sendReady();
             },
             gameEnd: function(winners) {
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 var winnerString = "";
@@ -130,9 +134,15 @@ $(function() {
                 $("#gamesetup").show();
             },
             suddenDeathStart: function () {
+                if (!loaded) {
+                    return;
+                }
                 $("#suddenDeathBtn").show();
             },
-            receiveChatMessage: function(user, message) {
+            receiveChatMessage: function (user, message) {
+                if (!loaded) {
+                    return;
+                }
                 $("#chatLog").append("<span><b>" + user["Name"] + "</b>: " + message + " </span>");
             }
         }

@@ -192,7 +192,7 @@ namespace DuckDuckShoot.Hubs
             }
             User newUser = new User(name, connectionId);
             GameLobby.Users.Add(newUser);
-            Clients.Others.addUser(newUser);
+            Clients.All.addUser(newUser);
             // Returns whether or not the name is valid
             return true;
         }
@@ -211,7 +211,7 @@ namespace DuckDuckShoot.Hubs
             {
                 GameLobby.CurrentGame.RemovePlayerFromGame(GameLobby.CurrentGame.getPlayerFromConnectionId(connectionId));
             }
-            Clients.Others.removeUser(GameLobby.getUserFromConnectionId(connectionId));
+            Clients.All.removeUser(GameLobby.getUserFromConnectionId(connectionId));
             GameLobby.Users.Remove(GameLobby.getUserFromConnectionId(connectionId));
             return base.OnDisconnected(stopCalled);
         }
