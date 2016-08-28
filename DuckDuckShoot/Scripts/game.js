@@ -187,7 +187,7 @@ $(function() {
         // Bind sudden death button handler
         $("#suddenDeathBtn")
             .click(function () {
-                game.server.SuddenDeathShoot();
+                game.server.suddenDeathShoot();
             });
     }
     // Start the connection.
