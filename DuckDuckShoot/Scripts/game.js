@@ -13,7 +13,7 @@ var outcomeToString = function(outcome) {
         if (outcome["TargetDucked"]) {
             return outcomeStr + " but they ducked.";
         } else {
-            return outcomeStr;
+            return outcomeStr + ".";
         }
     } else {
         return command["Actor"]["PlayerUser"]["Name"] + " ducked (but wasn't shot at).";
