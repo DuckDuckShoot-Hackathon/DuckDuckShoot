@@ -1,18 +1,20 @@
-﻿<div style="float: left; padding-right: 10px;" >
-    <span >Lobby: </span>
-    <div id="lobby"></div>
+﻿<div id="mainContentDiv" >
     <div id="gamesetup">
         <input type="button" id="startGame" value="Start Game!" />
     </div>
     <div id="game" hidden>
         <input type="button" id="suddenDeathBtn" value="Sudden Death Shoot" hidden />
-        <span id="timerLabel">Timer: <b id="timerValue"></b></span>
+        
         <span id="outcomesLabel">Outcomes: </span>
         <div id="outcomes"></div>
     </div>
     <div>
+        <div id="lobbyParent">
+            <div id="lobby"></div>
+        </div>
         <div id="container">
             <div id="center"></div>
+            <div id="timerLabel"><span id="timerValue"></span></div>
         </div>
         <div id="chatParent">
             <div id="chat">
@@ -23,6 +25,7 @@
                 </div>
             </div>
         </div>
+        
     </div>
 </div>
 
