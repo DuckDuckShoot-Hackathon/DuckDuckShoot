@@ -88,7 +88,7 @@ $(function() {
                     return;
                 }
                 players = state["players"];
-                roundTimer = 60;
+                roundTimer = 30;
                 $("#timerValue").text(roundTimer);
                 roundTimerInterval = window.setInterval(function() {
                         roundTimer--;

@@ -173,7 +173,7 @@ namespace DuckDuckShoot.Models
             // Remove any disconnected players
             foreach (Player player in Players)
             {
-                if (!player.IsActiveUser)
+                if (!player.IsActiveUser && player.IsAlive)
                 {
                     TurnOutcomes.Add(new Outcome(new Action(Action.ActionType.SHOOT, player, player), false, true));
                 }
