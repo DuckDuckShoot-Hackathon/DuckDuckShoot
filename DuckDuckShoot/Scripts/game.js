@@ -174,9 +174,15 @@ $(function() {
         $("#chatSend")
             .click(function() {
                 game.server.broadcastChatMessage($("#chatText").val());
-                var c = $('chat')[0];
-                //c.scrollTop = c.scrollHeight;
-                //$('#chat').scrollTop($('#chat')[0].scrollHeight);
+                $("#chatText").val("");
+                console.log("V: "+$("#chatText").val());
+            });
+        // Bind hitting enter in the chat box
+        $("#chatText")
+            .keyup(function (e) {
+                if (e.keyCode == 13) {
+                    $("#chatSend").click();
+                }
             });
         // Bind sudden death button handler
         $("#suddenDeathBtn")
