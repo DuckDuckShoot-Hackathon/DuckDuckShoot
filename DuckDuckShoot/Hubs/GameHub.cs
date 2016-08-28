@@ -113,7 +113,7 @@ namespace DuckDuckShoot.Hubs
         /// </summary>
         public void SendReady()
         {
-            if (GameLobby?.CurrentGame != null && !GameLobby.CurrentGame.IsMidTurn)
+            if (GameLobby.CurrentGame != null && !GameLobby.CurrentGame.IsMidTurn)
             {
                 GameLobby.CurrentGame.UnreadiedPlayers--;
                 if (GameLobby.CurrentGame.UnreadiedPlayers <= 0)
@@ -144,6 +144,12 @@ namespace DuckDuckShoot.Hubs
             {
                 Player shooter = GameLobby.CurrentGame.getPlayerFromConnectionId(Context.ConnectionId);
                 Player target = null;
+
+                if (!shooter.IsAlive)
+                {
+                    return;
+                }
+
                 foreach (Player p in GameLobby.CurrentGame.GetAlivePlayers())
                 {
                     if (!p.PlayerUser.Name.Equals(shooter.PlayerUser.Name))

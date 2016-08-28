@@ -239,7 +239,7 @@ namespace DuckDuckShoot.Models
                     else if (player.DeathTime - lastDiedTime >= TimeSpan.Zero)
                     {
                         // This player died at or after the latest found death time
-                        if (player.DeathTime - lastDiedTime > TimeSpan.FromSeconds(5))
+                        if (player.DeathTime - lastDiedTime > TimeSpan.FromSeconds(2))
                         {
                             // Player died at least 5 seconds more recently - i.e. not in the same round
                             tieResult.Clear();
