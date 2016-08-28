@@ -52,7 +52,8 @@ $(function() {
                 }
                 var userName = user["Name"];
                 var encodedName = $('<div />').text(userName).html();
-                $('#lobby').append("<span id='user-" + userName + "'>- " + encodedName + '</span>');
+                $('#lobby').append("<span class='lobbyUser' id='user-" + userName + "'>" + encodedName + '</span>');
+                console.log(encodedName);
                 users.push(user);
             },
             removeUser: function(user) {
@@ -155,7 +156,7 @@ $(function() {
                 for (var i = 0; i < users.length; i++) {
                     var userName = users[i]["Name"];
                     var encodedName = $('<div />').text(userName).html();
-                    $('#lobby').append("<span id='user-" + userName + "'>- " + encodedName + '</span>');
+                    $('#lobby').append("<span id='user-" + userName + "'>" + encodedName + '</span>');
                 }
                 if (gameInProgress) {
                     game.client.gameStart(state);
