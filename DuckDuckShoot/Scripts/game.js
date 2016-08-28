@@ -44,7 +44,6 @@ var populateGame = function() {
             var encodedName = $('<div />').text(userName).html();
             $('#players').append("<span id='player-" + userName + "'>- " + encodedName + '</span>');
             if (isAlive) {
-                deleteUser(userName);
                 addPlayer(userName);
                 $('#actions')
                     .append("<br/><input type='button' id='shoot-" +
@@ -132,7 +131,7 @@ $(function() {
                         $("#timerValue").text(roundTimer);
                     },
                     1000);
-
+                deleteAllUsers();
                 populateGame();
             },
             getOutcomes: function(outcomes) {
@@ -307,6 +306,13 @@ function addPlayer(username) {
     }
    
 }
+function deleteAllUsers() {
+  
+
+    $('.field').remove();
+
+    distributePlayers();
+}
 
 function deleteUser(username) {
     $('#' + username)
@@ -410,16 +416,6 @@ function setSprite(action, id, currentX, currentY, targetX, targetY) {
 
     }
 }
-/*
-        $(document).on('mouseover', 'img.player', function () {
-            $('#shoot_' + this.id).removeClass('hide');
-        });
-
-        $(document).on('mouseleave', 'img.player', function () {
-            $('#shoot_' + this.id).addClass('hide');
-        });
-
-        */
 
 $(document).on('click', '.shootButton', function () {
     var grabID = this.id.substr(6);
