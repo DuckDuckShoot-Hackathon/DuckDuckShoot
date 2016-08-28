@@ -108,6 +108,9 @@ $(function() {
                 if (!loaded) {
                     return;
                 }
+                var audio = new Audio();
+                audio.src = soundPath + "bigbadugly.mp3";
+                audio.play();
                 for (var i = 0; i < outcomes.length; i++) {
                     var outcome = outcomes[i];
 
@@ -165,6 +168,9 @@ $(function() {
                 if (!loaded) {
                     return;
                 }
+                var audio = new Audio();
+                audio.src = soundPath + "High Noon.mp3";
+                audio.play();
                 suddenDeathTimer = 5;
                 $("#suddenDeathValue").text(suddenDeathTimer);
                 suddenDeathInterval = window.setInterval(function () {
