@@ -22,7 +22,7 @@ namespace DuckDuckShoot.Hubs
             {
                 return;
             }
-            GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 1, 0), (int)Math.Log(GameLobby.Users.Count, 2));
+            GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 0, 30), (int)Math.Log(GameLobby.Users.Count, 2));
 
             // Tell all clients that the game has started
             Clients.All.gameStart(GameLobby.CurrentGame.Players.Select(p => p.PlayerUser.Name).ToArray());
