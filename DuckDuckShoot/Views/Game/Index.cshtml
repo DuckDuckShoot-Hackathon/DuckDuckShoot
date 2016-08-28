@@ -1,4 +1,4 @@
-﻿<div>
+﻿<div style="float: left; padding-right: 10px;">
     <span >Lobby: </span>
     <div id="lobby"></div>
     <div id="gamesetup">
@@ -12,19 +12,20 @@
         <span id="outcomesLabel">Outcomes: </span>
         <div id="outcomes"></div>
     </div>
-    <div id="chat">
-        <div id="chatLog"></div>
-        <input type="text" id="chatText" />
-        <input type="button" id="chatSend" value="Send" />
+    
+    <p>Number of players:</p> <input type="text" />
+    <button id="delete">-</button>
+    <button id="add">+</button>
+    <div id="container">
+        <div id="center"></div>
     </div>
 </div>
-
-<p>Number of players:</p> <input type="text" />
-<button id="delete">-</button>
-<button id="add">+</button>
-<div id="container">
-    <div id="center"></div>
+<div id="chat">
+    <div id="chatLog"></div>
+    <input type="text" id="chatText" />
+    <input type="button" id="chatSend" value="Send" />
 </div>
+
 @section scripts {
     <!--Reference the SignalR library. -->
     <script src="~/Scripts/jquery.signalR-2.2.1.min.js"></script>
