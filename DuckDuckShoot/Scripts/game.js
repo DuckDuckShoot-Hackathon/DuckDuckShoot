@@ -21,7 +21,6 @@ var outcomeToString = function(outcome) {
     }
 };
 var populateGame = function() {
-    $('#players').empty();
     var isAlive = true;
     var player;
     for (var i = 0; i < players.length; i++) {
@@ -35,8 +34,6 @@ var populateGame = function() {
         if (player["IsAlive"]) {
             var user = player["PlayerUser"];
             var userName = user["Name"];
-            var encodedName = $('<div />').text(userName).html();
-            $('#players').append("<span id='player-" + userName + "'>- " + encodedName + '</span>');
             if (isAlive) {
                 addPlayer(userName);
             }
@@ -202,6 +199,7 @@ $(function() {
                         game.server.newName(name).done(handleNameReturn);
                     } else {
                         name = servername;
+                        loaded = true;
                         setupPage();
                     }
                 });
