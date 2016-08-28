@@ -144,6 +144,12 @@ namespace DuckDuckShoot.Hubs
             {
                 Player shooter = GameLobby.CurrentGame.getPlayerFromConnectionId(Context.ConnectionId);
                 Player target = null;
+
+                if (!shooter.IsAlive)
+                {
+                    return;
+                }
+
                 foreach (Player p in GameLobby.CurrentGame.GetAlivePlayers())
                 {
                     if (!p.PlayerUser.Name.Equals(shooter.PlayerUser.Name))
