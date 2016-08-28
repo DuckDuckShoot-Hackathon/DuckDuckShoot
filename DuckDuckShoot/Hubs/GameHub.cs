@@ -44,16 +44,30 @@ namespace DuckDuckShoot.Hubs
                 EndGame();
                 return;
             }
-            
+                                   
             // Begin the timer to the end of the turn
             GameLobby.CurrentGame.StartTurn();
+
+            // Check for sudden death
+            if (GameLobby.CurrentGame.NumPlayersLeft() == 2)
+            {
+                StartSuddenDeath();
+                return;
+            }
 
             // Tell all clients the turn is starting
             Clients.All.turnStart(GameLobby.getLobbyState());
 
-             turnTimer = new Timer(ProcessGameTurn, null, GameLobby.CurrentGame.TurnTime, TimeSpan.FromMilliseconds(-1));
+            turnTimer = new Timer(ProcessGameTurn, null, GameLobby.CurrentGame.TurnTime, TimeSpan.FromMilliseconds(-1));
 
             
+        }
+
+        public void StartSuddenDeath()
+        {
+            GameLobby.CurrentGame.StartSuddenDeath();
+
+            // Tell all clients sudden death is happening
         }
 
         /// <summary>
@@ -114,6 +128,28 @@ namespace DuckDuckShoot.Hubs
             // Send outcomes to clients
             Clients.All.getOutcomes(outcomes.ToArray());
             
+        }
+
+        /// <summary>
+        /// Client sends a message to indicate that they shot in sudden death
+        /// </summary>
+        public void SuddenDeathShoot()
+        {
+            if (GameLobby.CurrentGame.SuddenDeathOn)
+            {
+                Player shooter = GameLobby.CurrentGame.getPlayerFromConnectionId(Context.ConnectionId);
+                Player target = null;
+                foreach (Player p in GameLobby.CurrentGame.GetAlivePlayers())
+                {
+                    if (!p.PlayerUser.Name.Equals(shooter.PlayerUser.Name))
+                    {
+                        target = p;
+                        break;
+                    }
+                }                
+                GameLobby.CurrentGame.SuddenDeathShoot(shooter, target);
+                ProcessGameTurn(null);
+            }
         }
 
         public void BroadcastChatMessage(string message)
