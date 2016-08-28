@@ -145,6 +145,9 @@ $(function() {
                 $("#actionsLabel").hide();
                 $("#gamesetup").show();
             },
+            suddenDeathStart: function () {
+                $("#suddenDeathBtn").show();
+            },
             receiveChatMessage: function(user, message) {
                 $("#chatLog").append("<span><b>" + user["Name"] + "</b>: " + message + " </span>");
             }
@@ -180,6 +183,11 @@ $(function() {
         $("#chatSend")
             .click(function() {
                 game.server.broadcastChatMessage($("#chatText").val());
+            });
+        // Bind sudden death button handler
+        $("#suddenDeathBtn")
+            .click(function () {
+                game.server.SuddenDeathShoot();
             });
     }
     // Start the connection.
