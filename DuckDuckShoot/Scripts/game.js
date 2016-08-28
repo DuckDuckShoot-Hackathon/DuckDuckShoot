@@ -98,6 +98,7 @@ $(function() {
                         $("#timerValue").text(roundTimer);
                     },
                     1000);
+                console.log("delete users");
                 deleteAllUsers();
                 populateGame();
             },
@@ -110,8 +111,36 @@ $(function() {
                 for (var i = 0; i < outcomes.length; i++) {
                     var outcome = outcomes[i];
                     $('#outcomes').append("<span>- " + outcomeToString(outcome) + "</span>");
+
+                    var command = outcome["ActCommand"];
+
+                    //Someone got shot
+                    if (command["ActType"] === 0) {
+                      
+
+                        if (outcome["TargetDucked"]) {
+                            //Make the person duck who was shot at
+                            updateSprite('shoot', command["Actor"]["PlayerUser"]["Name"], command["Actor"]["PlayerUser"]["Name"]);
+                            updateSprite('duck', command["Target"]["PlayerUser"]["Name"], command["Target"]["PlayerUser"]["Name"]);
+                        
+                        } else {
+                            updateSprite('shoot', command["Actor"]["PlayerUser"]["Name"], command["Target"]["PlayerUser"]["Name"]);
+                        }
+                    }
+                    //Ducked
+                    else {
+                        updateSprite('duck', command["Actor"]["PlayerUser"]["Name"], command["Actor"]["PlayerUser"]["Name"]);
+                    }
                 }
-                game.server.sendReady();
+                var delay = 5000;
+
+                setTimeout(function () {
+                    //deleteAllUsers();
+                    game.server.sendReady();
+                    
+                    console.log("We sent server ready");
+                }, delay);
+                
             },
             gameEnd: function(winners) {
                 if (!loaded) {
@@ -321,6 +350,39 @@ function deleteUser(username) {
 }
 
 distributePlayers();
+
+function updateSprite(action, actor, target) {
+    console.log(action + " " + actor + " " + target);
+  /*  
+    $(document).on('click', '.shootButton', function () {
+        var grabID = this.id.substr(6);
+        console.log(grabID);
+        var grabX = parseInt($(this).parent().css("left"));
+        var grabY = parseInt($(this).parent().css("top"));
+        //The ID in this case should be the person shooting, change when the
+        //current person's ID can be accessed
+        setSprite('shoot', name, 345, 45, grabX + 55, grabY + 55);
+        //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
+        game.server.sendAction("SHOOT " + grabID);
+  
+    });
+    */
+    if (action == 'shoot') {
+        //document.getElementById(actor).src = imagePath + shootimages[spriteNum];
+        setSprite('dead', actor, 0, 0, 0, 0);
+    }
+
+    if (action == 'dead') {
+        //document.getElementById(id).src = imagePath + deadimages[0];
+        setSprite('dead', actor, 0, 0, 0, 0);
+
+    }
+    if (action == 'duck') {
+        //document.getElementById(actor).src = imagePath + duckimages[0];
+        setSprite('dead', actor, 0, 0, 0, 0);
+
+    }
+}
 
 function setSprite(action, id, currentX, currentY, targetX, targetY) {
     var mx = targetX - currentX;
