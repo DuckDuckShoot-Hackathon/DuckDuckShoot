@@ -59,7 +59,7 @@ var populateGame = function() {
                         });
                 $(document).on('click', '.shootButton', function () {
                     var grabID = this.id.substr(6);
-                    console.log(grabID+ " yaaa");
+                    
                     var grabX = parseInt($(this).parent().css("left"));
                     var grabY = parseInt($(this).parent().css("top"));
                     //The ID in this case should be the person shooting, change when the
@@ -68,6 +68,7 @@ var populateGame = function() {
                     //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
 
                     //If user isn't ducked, kill them?
+                    //deleteUser(grabID);
 
                 });
             }
@@ -265,25 +266,45 @@ var incrementUsers = 0;
 
 //Add a new player with a username
 function addPlayer(username) {
-    $('<div/>', {
-        'class': 'field'
-    }).append(
-        $('<p/>', { 'class': 'username', 'text': username }),
+    if (username !== name) {
+        $('<div/>', {
+            'class': 'field'
+        }).append(
+       $('<p/>', { 'class': 'username', 'text': username }),
 
-        $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player'}),
-                $('<button/>', {
-                    'class': 'shootButton', 'id': 'shoot_' + username, 'text': 'Shoot'
-                })
+       $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
+               $('<button/>', {
+                   'class': 'shootButton', 'id': 'shoot_' + username, 'text': 'Shoot'
+               })
+           )
+        .css({
+            left: $('#container').width() / 2 - 25 + 'px',
+            top: $('#container').height() / 2 - 25 + 'px'
+        })
+        .addClass('anim')
+        .appendTo('#container')
+        distributePlayers();
+    }
+    else {
+        $('<div/>', {
+            'class': 'field'
+        }).append(
+       $('<p/>', { 'class': 'username', 'text': username }),
 
-
-            )
-.css({
-    left: $('#container').width() / 2 - 25 + 'px',
-    top: $('#container').height() / 2 - 25 + 'px'
-})
-.addClass('anim')
-.appendTo('#container')
-distributePlayers();
+       $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
+               $('<button/>', {
+                   'class': 'duckButton', 'id': 'duck_' + username, 'text': 'Duck'
+               })
+                   )
+        .css({
+            left: $('#container').width() / 2 - 25 + 'px',
+            top: $('#container').height() / 2 - 25 + 'px'
+        })
+        .addClass('anim')
+        .appendTo('#container')
+        distributePlayers();
+    }
+   
 }
 
 function deleteUser(username) {
@@ -365,6 +386,10 @@ function setSprite(action, id, currentX, currentY, targetX, targetY) {
     var deadimages = [
         'deadimg.png'
     ];
+
+    var duckimages = [
+       'duck.png'
+    ];
     console.log(id);
     if (action == 'stand') {
         document.getElementById(id).src = imagePath + standimages[spriteNum];
@@ -377,6 +402,10 @@ function setSprite(action, id, currentX, currentY, targetX, targetY) {
 
     if (action == 'dead') {
         document.getElementById(id).src = imagePath + deadimages[0];
+
+    }
+    if (action == 'duck') {
+        document.getElementById(id).src = imagePath + duckimages[0];
 
     }
 }
@@ -403,5 +432,19 @@ $(document).on('click', '.shootButton', function () {
 
     //If user isn't ducked, kill them?
   
+});
+
+$(document).on('click', '.duckButton', function () {
+    var grabID = this.id.substr(5);
+    console.log(grabID);
+    var grabX = parseInt($(this).parent().css("left"));
+    var grabY = parseInt($(this).parent().css("top"));
+    //The ID in this case should be the person shooting, change when the
+    //current person's ID can be accessed
+    setSprite('duck', name, 345, 45, grabX, grabY);
+    //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
+
+    //If user isn't ducked, kill them?
+
 });
                   
