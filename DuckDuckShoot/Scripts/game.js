@@ -57,20 +57,6 @@ var populateGame = function() {
                         function(e) {
                             game.server.sendAction("SHOOT " + e.data.userName);
                         });
-                $(document).on('click', '.shootButton', function () {
-                    var grabID = this.id.substr(6);
-                    
-                    var grabX = parseInt($(this).parent().css("left"));
-                    var grabY = parseInt($(this).parent().css("top"));
-                    //The ID in this case should be the person shooting, change when the
-                    //current person's ID can be accessed
-                    setSprite('shoot', name, 345, 45, grabX + 55, grabY + 55);
-                    //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
-
-                    //If user isn't ducked, kill them?
-                    //deleteUser(grabID);
-
-                });
             }
         }
     }
@@ -430,8 +416,7 @@ $(document).on('click', '.shootButton', function () {
     //current person's ID can be accessed
     setSprite('shoot', name, 345, 45, grabX + 55, grabY + 55);
     //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
-
-    //If user isn't ducked, kill them?
+    game.server.sendAction("SHOOT " + grabID);
   
 });
 
@@ -444,8 +429,7 @@ $(document).on('click', '.duckButton', function () {
     //current person's ID can be accessed
     setSprite('duck', name, 345, 45, grabX, grabY);
     //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
-
-    //If user isn't ducked, kill them?
+    game.server.sendAction("DUCK");
 
 });
                   
