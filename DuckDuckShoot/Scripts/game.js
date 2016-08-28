@@ -141,6 +141,7 @@ $(function() {
                     sep = ", and ";
                 }
                 $('#outcomes').append("<span>- Winner/s: " + winnerString + "</span>");
+                $('#suddenDeathBtn').hide();
                 $("#actions").empty();
                 $("#actionsLabel").hide();
                 $("#gamesetup").show();

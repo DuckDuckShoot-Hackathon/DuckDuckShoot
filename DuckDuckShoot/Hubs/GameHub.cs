@@ -113,7 +113,7 @@ namespace DuckDuckShoot.Hubs
         /// </summary>
         public void SendReady()
         {
-            if (GameLobby?.CurrentGame != null && !GameLobby.CurrentGame.IsMidTurn)
+            if (GameLobby.CurrentGame != null && !GameLobby.CurrentGame.IsMidTurn)
             {
                 GameLobby.CurrentGame.UnreadiedPlayers--;
                 if (GameLobby.CurrentGame.UnreadiedPlayers <= 0)
