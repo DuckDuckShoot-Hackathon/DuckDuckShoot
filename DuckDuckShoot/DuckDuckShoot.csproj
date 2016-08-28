@@ -171,6 +171,8 @@
     <Content Include="images\duck.png" />
     <Content Include="images\e.png" />
     <Content Include="images\es.png" />
+    <Content Include="images\logowhite.png" />
+    <Content Include="images\logowhite50.png" />
     <Content Include="images\n.png" />
     <Content Include="images\ne.png" />
     <Content Include="images\nes.png" />
