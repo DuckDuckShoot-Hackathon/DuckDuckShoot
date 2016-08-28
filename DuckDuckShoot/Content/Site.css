@@ -54,7 +54,7 @@ span {
 }
 
 #container { width: 800px; height: 600px; position: relative; display: inline-block; background-image: url('images/bg.png');}
-#center { width: 10px; height: 10px; position: absolute; left: 400px; top: 300px; background: #000; border-radius: 50%; }
+#center { width: 10px; height: 10px; position: absolute; left: 400px; top: 300px; border-radius: 50%; }
 .field { position: absolute; }
 
 .field {
