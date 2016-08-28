@@ -134,6 +134,7 @@ $(function() {
             },
             receiveChatMessage: function(user, message) {
                 $("#chatLog").append("<span><b>" + user["Name"] + "</b>: " + message + " </span>");
+                $('#chat').scrollTop($('#chat')[0].scrollHeight);
             }
         }
 
@@ -167,6 +168,9 @@ $(function() {
         $("#chatSend")
             .click(function() {
                 game.server.broadcastChatMessage($("#chatText").val());
+                var c = $('chat')[0];
+                //c.scrollTop = c.scrollHeight;
+                //$('#chat').scrollTop($('#chat')[0].scrollHeight);
             });
         // Bind sudden death button handler
         $("#suddenDeathBtn")
