@@ -32,10 +32,8 @@ var populateGame = function() {
     for (var j = 0; j < players.length; j++) {
         player = players[j];
         if (player["IsAlive"]) {
-            var user = player["PlayerUser"];
-            var userName = user["Name"];
             if (isAlive) {
-                addPlayer(userName);
+                addPlayer(player);
             }
         }
     }
@@ -243,7 +241,8 @@ function distributePlayers(deg) {
 var incrementUsers = 0;
 
 //Add a new player with a username
-function addPlayer(username) {
+function addPlayer(player) {
+    var username = player["PlayerUser"]["Name"];
     if (username !== name) {
         $('<div/>',
             {
@@ -251,6 +250,7 @@ function addPlayer(username) {
             })
             .append(
                 $('<p/>', { 'class': 'username', 'text': username }),
+                $('<span/>', {'text': player["NumDucks"] + " Ducks Left"}),
                 $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
                 $('<button/>',
                 {
@@ -273,6 +273,7 @@ function addPlayer(username) {
             })
             .append(
                 $('<p/>', { 'class': 'username', 'text': username }),
+                $('<span/>', { 'text': player["NumDucks"] + " Ducks Left" }),
                 $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
                 $('<button/>',
                 {
@@ -312,17 +313,6 @@ function deleteUser(username) {
 
     distributePlayers();
 }
-
-//Add another player using button (testing purposes)
-$('#add').click(function () {
-    incrementUsers++;
-    addPlayer('testuser' + incrementUsers);
-});
-
-$('#delete').click(function () {
-    deleteUser('testuser' + incrementUsers);
-    incrementUsers--;
-});
 
 distributePlayers();
 
