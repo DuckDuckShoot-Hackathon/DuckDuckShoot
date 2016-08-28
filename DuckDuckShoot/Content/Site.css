@@ -35,7 +35,6 @@ body {
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
-input,
 select,
 textarea {
     max-width: 280px;
@@ -45,7 +44,7 @@ span {
     display: block;
 }
 
-#container { width: 800px; height: 600px; position: relative;background-image: url('images/bg.png');}
+#container { width: 800px; height: 600px; position: relative; float: left; background-image: url('images/bg.png');}
 #center { width: 10px; height: 10px; position: absolute; left: 400px; top: 300px; background: #000; border-radius: 50%; }
 .field { position: absolute; }
 
@@ -74,11 +73,12 @@ margin-top:-15px;
 }
 
 #chatParent {
-    width: 300px;
-    height: 300px;
-    
-    position:relative;
-
+    float: left;
+    position: relative;
+    width: 305px;
+    height: 600px;
+    padding-left: 5px;
+    padding-right: 5px;
     background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.05));
 }
 
@@ -88,21 +88,27 @@ margin-top:-15px;
     position:absolute;
     bottom:0px;
         
+    word-wrap: break-word;
     overflow-y: auto;
-    
-    border: 1px solid red;
-    
-
-}
-
-#chatText {
-    width: 100%;
 }
 
 #chatLog {
     
 }
 
+#chatInput {
+    
+}
+
+#chatText {
+    background: rgba(200, 200, 200);
+    border: 1px solid rgb(200, 200, 200);
+    float: left;
+    width: 240px;
+    height: 33px;
+}
+
 #chatSend {
+    float: left;
     
 }

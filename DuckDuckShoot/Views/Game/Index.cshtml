@@ -12,17 +12,22 @@
         <span id="outcomesLabel">Outcomes: </span>
         <div id="outcomes"></div>
     </div>
-    <div id="container">
-        <div id="center"></div>
+    <div>
+        <div id="container">
+            <div id="center"></div>
+        </div>
+        <div id="chatParent">
+            <div id="chat">
+                <div id="chatLog"></div>
+                <div id="chatInput">
+                    <input type="text" id="chatText" />
+                    <input type="button" class="btn btn-primary" id="chatSend" value="Send" />
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<div id="chatParent">
-    <div id="chat">
-        <div id="chatLog"></div>
-        <input type="text" id="chatText" />
-        <input type="button" id="chatSend" value="Send" />
-    </div>
-</div>
+
 
 @section scripts {
     <!--Reference the SignalR library. -->
