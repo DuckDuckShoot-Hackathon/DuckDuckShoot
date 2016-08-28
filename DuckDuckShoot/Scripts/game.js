@@ -44,6 +44,8 @@ var populateGame = function() {
             var encodedName = $('<div />').text(userName).html();
             $('#players').append("<span id='player-" + userName + "'>- " + encodedName + '</span>');
             if (isAlive) {
+                deleteUser(userName);
+                addPlayer(userName);
                 $('#actions')
                     .append("<br/><input type='button' id='shoot-" +
                         userName +
@@ -55,6 +57,19 @@ var populateGame = function() {
                         function(e) {
                             game.server.sendAction("SHOOT " + e.data.userName);
                         });
+                $(document).on('click', '.shootButton', function () {
+                    var grabID = this.id.substr(6);
+                    console.log(grabID+ " yaaa");
+                    var grabX = parseInt($(this).parent().css("left"));
+                    var grabY = parseInt($(this).parent().css("top"));
+                    //The ID in this case should be the person shooting, change when the
+                    //current person's ID can be accessed
+                    setSprite('shoot', name, 345, 45, grabX + 55, grabY + 55);
+                    //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
+
+                    //If user isn't ducked, kill them?
+
+                });
             }
         }
     }
@@ -279,7 +294,7 @@ function deleteUser(username) {
         top: $('#container').height() / 2 - 25 + 'px'
     })
     .fadeOut(400, function () {
-        $(this).remove();
+        $(this).parent().remove();
     });
 
     distributePlayers();
@@ -356,6 +371,7 @@ function setSprite(action, id, currentX, currentY, targetX, targetY) {
     }
 
     if (action == 'shoot') {
+        console.log(id);
         document.getElementById(id).src = imagePath + shootimages[spriteNum];
     }
 
@@ -377,13 +393,15 @@ function setSprite(action, id, currentX, currentY, targetX, targetY) {
 
 $(document).on('click', '.shootButton', function () {
     var grabID = this.id.substr(6);
+    console.log(grabID);
     var grabX = parseInt($(this).parent().css("left"));
     var grabY = parseInt($(this).parent().css("top"));
     //The ID in this case should be the person shooting, change when the
     //current person's ID can be accessed
-    setSprite('shoot', 'testuser1', 345, 45, grabX + 55, grabY + 55)
-    setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
+    setSprite('shoot', name, 345, 45, grabX + 55, grabY + 55);
+    //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
 
     //If user isn't ducked, kill them?
-
+  
 });
+                  
