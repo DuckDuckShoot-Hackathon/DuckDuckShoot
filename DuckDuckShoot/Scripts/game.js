@@ -4,6 +4,8 @@ var users = [];
 var game;
 var roundTimer = 0;
 var roundTimerInterval;
+var suddenDeathTimer = 0;
+var suddenDeathInterval;
 var loaded = false;
 var outcomeToString = function(outcome) {
     var command = outcome["ActCommand"];
@@ -163,6 +165,16 @@ $(function() {
                 if (!loaded) {
                     return;
                 }
+                suddenDeathTimer = 5;
+                $("#suddenDeathValue").text(suddenDeathTimer);
+                suddenDeathInterval = window.setInterval(function () {
+                    suddenDeathTimer--;
+                    if (suddenDeathTimer <= 0) {
+                        window.clearInterval(suddenDeathInterval);
+                    }
+                    $("#suddenDeathValue").text(suddenDeathTimer);
+                },
+                    1000);
                 $("#suddenDeathBtn").show();
                 console.log("delete users state");
                 deleteAllUsers();
