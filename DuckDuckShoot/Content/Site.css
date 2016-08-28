@@ -17,7 +17,7 @@
 }
 
 body {
-    padding-top: 50px;
+    padding-top: 80px;
     padding-bottom: 20px;
 }
 
@@ -45,7 +45,6 @@ span {
     display: block;
 }
 
-body { padding: 2em; }
 #container { width: 800px; height: 600px; position: relative;background-image: url('images/bg.png');}
 #center { width: 10px; height: 10px; position: absolute; left: 400px; top: 300px; background: #000; border-radius: 50%; }
 .field { position: absolute; }
