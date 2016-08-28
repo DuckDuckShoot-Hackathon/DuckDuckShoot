@@ -79,7 +79,6 @@ $(function() {
                 console.log("Starting new game...");
                 $("#game").show();
                 $("#gamesetup").hide();
-                $("#outcomes").hide();
                 players = playerList;
                 populateGame();
             },
@@ -106,11 +105,9 @@ $(function() {
                 if (!loaded) {
                     return;
                 }
-                $("#outcomes").empty();
-                $("#outcomes").show();
                 for (var i = 0; i < outcomes.length; i++) {
                     var outcome = outcomes[i];
-                    $('#outcomes').append("<span>- " + outcomeToString(outcome) + "</span>");
+                    game.client.receiveChatMessage({Name: "Server"}, outcomeToString(outcome));
                 }
                 game.server.sendReady();
             },
@@ -124,7 +121,7 @@ $(function() {
                     winnerString += sep + winners[i]["PlayerUser"]["Name"];
                     sep = ", and ";
                 }
-                $('#outcomes').append("<span>- Winner/s: " + winnerString + "</span>");
+                game.client.receiveChatMessage({ Name: "Winner/s" }, winnerString);
                 $('#suddenDeathBtn').hide();
                 $("#gamesetup").show();
             },
@@ -138,7 +135,11 @@ $(function() {
                 if (!loaded) {
                     return;
                 }
-                $("#chatLog").append("<span><b>" + user["Name"] + "</b>: " + message + " </span>");
+                if (user["Name"] === "Server") {
+                    $("#chatLog").append("<span style='color:red'><b>Server</b>: " + message + " </span>");
+                } else {
+                    $("#chatLog").append("<span><b>" + user["Name"] + "</b>: " + message + " </span>");
+                }
                 $('#chat').scrollTop($('#chat')[0].scrollHeight);
             }
         }
