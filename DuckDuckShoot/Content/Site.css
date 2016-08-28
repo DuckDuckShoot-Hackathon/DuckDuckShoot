@@ -23,10 +23,10 @@ body {
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
-    position: absolute;
-    left: 50px;
     padding-left: 15px;
     padding-right: 15px;
+    padding-top: 15px;
+    text-align: center;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
@@ -47,17 +47,18 @@ span {
 }
 
 #mainContentDiv {
-    float: left;
     padding-right: 10px;
     overflow-x: auto;
     white-space: nowrap;
 }
 
+
 #container { width: 800px; height: 600px; position: relative; display: inline-block; background-image: url('images/bg.png');
              vertical-align: top;
     word-wrap: break-word;
 }
-#center { width: 10px; height: 10px; position: absolute; left: 400px; top: 300px; background: #000; border-radius: 50%; }
+#center { width: 10px; height: 10px; position: absolute; left: 400px; top: 300px; border-radius: 50%; }
+
 .field { position: absolute; }
 
 .field {
