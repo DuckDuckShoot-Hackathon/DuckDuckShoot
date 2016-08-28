@@ -21,20 +21,13 @@ var outcomeToString = function(outcome) {
 };
 var populateGame = function() {
     $('#players').empty();
-    $('#actions').empty();
     var isAlive = true;
     var player;
     for (var i = 0; i < players.length; i++) {
         player = players[i];
         if (player["PlayerUser"]["Name"] === name && !player["IsAlive"]) {
             isAlive = false;
-            $("#actionsLabel").hide();
         }
-    }
-    if (isAlive) {
-        $("#actionsLabel").show();
-        $('#actions').append("<input type='button' id='duck' value='DUCK'/>");
-        $("#duck").click(function() { game.server.sendAction("DUCK"); });
     }
     for (var j = 0; j < players.length; j++) {
         player = players[j];
@@ -46,17 +39,6 @@ var populateGame = function() {
             if (isAlive) {
                 deleteUser(userName);
                 addPlayer(userName);
-                $('#actions')
-                    .append("<br/><input type='button' id='shoot-" +
-                        userName +
-                        "' value='SHOOT " +
-                        encodedName +
-                        "'/>");
-                $("#shoot-" + userName)
-                    .click({ userName: userName },
-                        function(e) {
-                            game.server.sendAction("SHOOT " + e.data.userName);
-                        });
             }
         }
     }
@@ -145,8 +127,6 @@ $(function() {
                 }
                 $('#outcomes').append("<span>- Winner/s: " + winnerString + "</span>");
                 $('#suddenDeathBtn').hide();
-                $("#actions").empty();
-                $("#actionsLabel").hide();
                 $("#gamesetup").show();
             },
             suddenDeathStart: function () {
@@ -254,44 +234,51 @@ var incrementUsers = 0;
 //Add a new player with a username
 function addPlayer(username) {
     if (username !== name) {
-        $('<div/>', {
-            'class': 'field'
-        }).append(
-       $('<p/>', { 'class': 'username', 'text': username }),
-
-       $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
-               $('<button/>', {
-                   'class': 'shootButton', 'id': 'shoot_' + username, 'text': 'Shoot'
-               })
-           )
-        .css({
-            left: $('#container').width() / 2 - 25 + 'px',
-            top: $('#container').height() / 2 - 25 + 'px'
-        })
-        .addClass('anim')
-        .appendTo('#container')
+        $('<div/>',
+            {
+                'class': 'field'
+            })
+            .append(
+                $('<p/>', { 'class': 'username', 'text': username }),
+                $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
+                $('<button/>',
+                {
+                    'class': 'shootButton',
+                    'id': 'shoot_' + username,
+                    'text': 'Shoot'
+                })
+            )
+            .css({
+                left: $('#container').width() / 2 - 25 + 'px',
+                top: $('#container').height() / 2 - 25 + 'px'
+            })
+            .addClass('anim')
+            .appendTo('#container')
+        distributePlayers();
+    } else {
+        $('<div/>',
+            {
+                'class': 'field'
+            })
+            .append(
+                $('<p/>', { 'class': 'username', 'text': username }),
+                $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
+                $('<button/>',
+                {
+                    'class': 'duckButton',
+                    'id': 'duck_' + username,
+                    'text': 'Duck'
+                })
+            )
+            .css({
+                left: $('#container').width() / 2 - 25 + 'px',
+                top: $('#container').height() / 2 - 25 + 'px'
+            })
+            .addClass('anim')
+            .appendTo('#container')
         distributePlayers();
     }
-    else {
-        $('<div/>', {
-            'class': 'field'
-        }).append(
-       $('<p/>', { 'class': 'username', 'text': username }),
 
-       $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
-               $('<button/>', {
-                   'class': 'duckButton', 'id': 'duck_' + username, 'text': 'Duck'
-               })
-                   )
-        .css({
-            left: $('#container').width() / 2 - 25 + 'px',
-            top: $('#container').height() / 2 - 25 + 'px'
-        })
-        .addClass('anim')
-        .appendTo('#container')
-        distributePlayers();
-    }
-   
 }
 
 function deleteUser(username) {
