@@ -79,7 +79,6 @@ $(function() {
                 console.log("Starting new game...");
                 $("#game").show();
                 $("#gamesetup").hide();
-                $("#outcomes").hide();
                 players = playerList;
                 populateGame();
             },
@@ -107,10 +106,9 @@ $(function() {
                 if (!loaded) {
                     return;
                 }
-                $("#outcomes").empty();
-                $("#outcomes").show();
                 for (var i = 0; i < outcomes.length; i++) {
                     var outcome = outcomes[i];
+
                     $('#outcomes').append("<span>- " + outcomeToString(outcome) + "</span>");
 
                     var command = outcome["ActCommand"];
@@ -126,12 +124,16 @@ $(function() {
                         
                         } else {
                             updateSprite('shoot', command["Actor"]["PlayerUser"]["Name"], command["Target"]["PlayerUser"]["Name"]);
+                            updateSprite('dead', command["Target"]["PlayerUser"]["Name"], command["Target"]["PlayerUser"]["Name"]);
                         }
                     }
                     //Ducked
                     else {
                         updateSprite('duck', command["Actor"]["PlayerUser"]["Name"], command["Actor"]["PlayerUser"]["Name"]);
                     }
+
+                    game.client.receiveChatMessage({Name: "Server"}, outcomeToString(outcome));
+
                 }
                 var delay = 5000;
 
@@ -153,7 +155,7 @@ $(function() {
                     winnerString += sep + winners[i]["PlayerUser"]["Name"];
                     sep = ", and ";
                 }
-                $('#outcomes').append("<span>- Winner/s: " + winnerString + "</span>");
+                game.client.receiveChatMessage({ Name: "Winner/s" }, winnerString);
                 $('#suddenDeathBtn').hide();
                 $("#gamesetup").show();
             },
@@ -170,7 +172,11 @@ $(function() {
                 if (!loaded) {
                     return;
                 }
-                $("#chatLog").append("<span><b>" + user["Name"] + "</b>: " + message + " </span>");
+                if (user["Name"] === "Server") {
+                    $("#chatLog").append("<span style='color:red'><b>Server</b>: " + message + " </span>");
+                } else {
+                    $("#chatLog").append("<span><b>" + user["Name"] + "</b>: " + message + " </span>");
+                }
                 $('#chat').scrollTop($('#chat')[0].scrollHeight);
             }
         }
@@ -360,23 +366,17 @@ distributePlayers();
 
 function updateSprite(action, actor, target) {
     console.log(action + " " + actor + " " + target);
-  /*  
-    $(document).on('click', '.shootButton', function () {
-        var grabID = this.id.substr(6);
-        console.log(grabID);
-        var grabX = parseInt($(this).parent().css("left"));
-        var grabY = parseInt($(this).parent().css("top"));
-        //The ID in this case should be the person shooting, change when the
-        //current person's ID can be accessed
-        setSprite('shoot', name, 345, 45, grabX + 55, grabY + 55);
-        //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
-        game.server.sendAction("SHOOT " + grabID);
   
-    });
-    */
+  
+        var grabXactor = parseInt($('#' + actor).parent().css("left"));
+        var grabYactor = parseInt($('#' + actor).parent().css("top"));
+
+        var grabXtarget = parseInt($('#' + target).parent().css("left"));
+        var grabYtarget = parseInt($('#' + target).parent().css("top"));
+     
     if (action == 'shoot') {
         //document.getElementById(actor).src = imagePath + shootimages[spriteNum];
-        setSprite('dead', actor, 0, 0, 0, 0);
+        setSprite('shoot', actor, grabXactor, grabYactor, grabXtarget, grabYtarget);
     }
 
     if (action == 'dead') {
@@ -386,7 +386,7 @@ function updateSprite(action, actor, target) {
     }
     if (action == 'duck') {
         //document.getElementById(actor).src = imagePath + duckimages[0];
-        setSprite('dead', actor, 0, 0, 0, 0);
+        setSprite('duck', actor, 0, 0, 0, 0);
 
     }
 }
