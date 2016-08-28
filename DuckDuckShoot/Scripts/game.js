@@ -4,6 +4,7 @@ var users = [];
 var game;
 var roundTimer = 0;
 var roundTimerInterval;
+var loaded = false;
 var outcomeToString = function(outcome) {
     var command = outcome["ActCommand"];
     if (command["ActType"] === 0) {
@@ -21,20 +22,13 @@ var outcomeToString = function(outcome) {
 };
 var populateGame = function() {
     $('#players').empty();
-    $('#actions').empty();
     var isAlive = true;
     var player;
     for (var i = 0; i < players.length; i++) {
         player = players[i];
         if (player["PlayerUser"]["Name"] === name && !player["IsAlive"]) {
             isAlive = false;
-            $("#actionsLabel").hide();
         }
-    }
-    if (isAlive) {
-        $("#actionsLabel").show();
-        $('#actions').append("<input type='button' id='duck' value='DUCK'/>");
-        $("#duck").click(function() { game.server.sendAction("DUCK"); });
     }
     for (var j = 0; j < players.length; j++) {
         player = players[j];
@@ -45,31 +39,6 @@ var populateGame = function() {
             $('#players').append("<span id='player-" + userName + "'>- " + encodedName + '</span>');
             if (isAlive) {
                 addPlayer(userName);
-                $('#actions')
-                    .append("<br/><input type='button' id='shoot-" +
-                        userName +
-                        "' value='SHOOT " +
-                        encodedName +
-                        "'/>");
-                $("#shoot-" + userName)
-                    .click({ userName: userName },
-                        function(e) {
-                            game.server.sendAction("SHOOT " + e.data.userName);
-                        });
-                $(document).on('click', '.shootButton', function () {
-                    var grabID = this.id.substr(6);
-                    
-                    var grabX = parseInt($(this).parent().css("left"));
-                    var grabY = parseInt($(this).parent().css("top"));
-                    //The ID in this case should be the person shooting, change when the
-                    //current person's ID can be accessed
-                    setSprite('shoot', name, 345, 45, grabX + 55, grabY + 55);
-                    //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
-
-                    //If user isn't ducked, kill them?
-                    //deleteUser(grabID);
-
-                });
             }
         }
     }
@@ -80,7 +49,10 @@ $(function() {
     {
         client: {
             addUser: function(user) {
-                if (name === "") {
+                if (!loaded) {
+                    if (user["Name"] === name) {
+                        loaded = true;
+                    }
                     return;
                 }
                 var userName = user["Name"];
@@ -89,7 +61,7 @@ $(function() {
                 users.push(user);
             },
             removeUser: function(user) {
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 var userName = user["Name"];
@@ -105,7 +77,7 @@ $(function() {
                 }
             },
             gameStart: function(playerList) {
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 console.log("Starting new game...");
@@ -117,7 +89,7 @@ $(function() {
             },
             turnStart: function (state) {
                 console.log("Starting new turn...");
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 players = state["players"];
@@ -135,7 +107,7 @@ $(function() {
                 populateGame();
             },
             getOutcomes: function(outcomes) {
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 $("#outcomes").empty();
@@ -147,7 +119,7 @@ $(function() {
                 game.server.sendReady();
             },
             gameEnd: function(winners) {
-                if (name === "") {
+                if (!loaded) {
                     return;
                 }
                 var winnerString = "";
@@ -158,14 +130,18 @@ $(function() {
                 }
                 $('#outcomes').append("<span>- Winner/s: " + winnerString + "</span>");
                 $('#suddenDeathBtn').hide();
-                $("#actions").empty();
-                $("#actionsLabel").hide();
                 $("#gamesetup").show();
             },
             suddenDeathStart: function () {
+                if (!loaded) {
+                    return;
+                }
                 $("#suddenDeathBtn").show();
             },
-            receiveChatMessage: function(user, message) {
+            receiveChatMessage: function (user, message) {
+                if (!loaded) {
+                    return;
+                }
                 $("#chatLog").append("<span><b>" + user["Name"] + "</b>: " + message + " </span>");
             }
         }
@@ -267,44 +243,51 @@ var incrementUsers = 0;
 //Add a new player with a username
 function addPlayer(username) {
     if (username !== name) {
-        $('<div/>', {
-            'class': 'field'
-        }).append(
-       $('<p/>', { 'class': 'username', 'text': username }),
-
-       $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
-               $('<button/>', {
-                   'class': 'shootButton', 'id': 'shoot_' + username, 'text': 'Shoot'
-               })
-           )
-        .css({
-            left: $('#container').width() / 2 - 25 + 'px',
-            top: $('#container').height() / 2 - 25 + 'px'
-        })
-        .addClass('anim')
-        .appendTo('#container')
+        $('<div/>',
+            {
+                'class': 'field'
+            })
+            .append(
+                $('<p/>', { 'class': 'username', 'text': username }),
+                $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
+                $('<button/>',
+                {
+                    'class': 'shootButton',
+                    'id': 'shoot_' + username,
+                    'text': 'Shoot'
+                })
+            )
+            .css({
+                left: $('#container').width() / 2 - 25 + 'px',
+                top: $('#container').height() / 2 - 25 + 'px'
+            })
+            .addClass('anim')
+            .appendTo('#container')
+        distributePlayers();
+    } else {
+        $('<div/>',
+            {
+                'class': 'field'
+            })
+            .append(
+                $('<p/>', { 'class': 'username', 'text': username }),
+                $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
+                $('<button/>',
+                {
+                    'class': 'duckButton',
+                    'id': 'duck_' + username,
+                    'text': 'Duck'
+                })
+            )
+            .css({
+                left: $('#container').width() / 2 - 25 + 'px',
+                top: $('#container').height() / 2 - 25 + 'px'
+            })
+            .addClass('anim')
+            .appendTo('#container')
         distributePlayers();
     }
-    else {
-        $('<div/>', {
-            'class': 'field'
-        }).append(
-       $('<p/>', { 'class': 'username', 'text': username }),
 
-       $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
-               $('<button/>', {
-                   'class': 'duckButton', 'id': 'duck_' + username, 'text': 'Duck'
-               })
-                   )
-        .css({
-            left: $('#container').width() / 2 - 25 + 'px',
-            top: $('#container').height() / 2 - 25 + 'px'
-        })
-        .addClass('anim')
-        .appendTo('#container')
-        distributePlayers();
-    }
-   
 }
 function deleteAllUsers() {
   
@@ -426,8 +409,7 @@ $(document).on('click', '.shootButton', function () {
     //current person's ID can be accessed
     setSprite('shoot', name, 345, 45, grabX + 55, grabY + 55);
     //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
-
-    //If user isn't ducked, kill them?
+    game.server.sendAction("SHOOT " + grabID);
   
 });
 
@@ -440,8 +422,7 @@ $(document).on('click', '.duckButton', function () {
     //current person's ID can be accessed
     setSprite('duck', name, 345, 45, grabX, grabY);
     //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
-
-    //If user isn't ducked, kill them?
+    game.server.sendAction("DUCK");
 
 });
                   
