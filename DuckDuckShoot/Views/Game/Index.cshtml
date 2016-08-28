@@ -1,4 +1,4 @@
-﻿<div style="float: left; padding-right: 10px;">
+﻿<div style="float: left; padding-right: 10px;" >
     <span >Lobby: </span>
     <div id="lobby"></div>
     <div id="gamesetup">
@@ -14,10 +14,12 @@
         <div id="center"></div>
     </div>
 </div>
-<div id="chat">
-    <div id="chatLog"></div>
-    <input type="text" id="chatText" />
-    <input type="button" id="chatSend" value="Send" />
+<div id="chatParent">
+    <div id="chat">
+        <div id="chatLog"></div>
+        <input type="text" id="chatText" />
+        <input type="button" id="chatSend" value="Send" />
+    </div>
 </div>
 
 @section scripts {
