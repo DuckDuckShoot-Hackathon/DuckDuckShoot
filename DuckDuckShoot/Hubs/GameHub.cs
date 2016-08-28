@@ -208,7 +208,7 @@ namespace DuckDuckShoot.Hubs
             string connectionId = Context.ConnectionId;
 
             //Remove this user using the connection id
-            if (GameLobby.CurrentGame != null)
+            if (GameLobby.CurrentGame != null && GameLobby.CurrentGame.getPlayerFromConnectionId(Context.ConnectionId) != null)
             {
                 GameLobby.CurrentGame.RemovePlayerFromGame(GameLobby.CurrentGame.getPlayerFromConnectionId(connectionId));
             }

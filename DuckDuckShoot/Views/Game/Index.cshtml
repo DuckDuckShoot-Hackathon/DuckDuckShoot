@@ -3,15 +3,18 @@
         <input type="button" id="startGame" value="Start Game!" />
     </div>
     <div id="game" hidden>
-        <input type="button" id="suddenDeathBtn" value="Sudden Death Shoot" hidden />
     </div>
-    <div>
+    <div id="mainContainer">
         <div id="lobbyParent">
             <div id="lobby"></div>
         </div>
         <div id="container">
             <div id="center"></div>
             <div id="timerLabel"><span id="timerValue"></span></div>
+            <div id="suddenDeathLabel">
+                <span id="suddenDeathValue"></span>
+                <input type="button" id="suddenDeathBtn" value="Sudden Death Shoot" hidden />
+            </div>
         </div>
         <div id="chatParent">
             <div id="chat">
