@@ -23,20 +23,18 @@ var outcomeToString = function(outcome) {
     }
 };
 var populateGame = function() {
-    var isAlive = true;
+    var isAlive = false;
     var player;
     for (var i = 0; i < players.length; i++) {
         player = players[i];
-        if (player["PlayerUser"]["Name"] === name && !player["IsAlive"]) {
-            isAlive = false;
+        if (player["PlayerUser"]["Name"] === name && player["IsAlive"]) {
+            isAlive = true;
         }
     }
     for (var j = 0; j < players.length; j++) {
         player = players[j];
         if (player["IsAlive"]) {
-            if (isAlive) {
-                addPlayer(player);
-            }
+            addPlayer(player, isAlive);
         }
     }
 }
@@ -54,8 +52,7 @@ $(function() {
                 }
                 var userName = user["Name"];
                 var encodedName = $('<div />').text(userName).html();
-                $('#lobby').append("<span class='lobbyUser' id='user-" + userName + "'>" + encodedName + '</span>');
-                console.log(encodedName);
+                $('#lobby').append("<span class='lobbyUser' id='user-" + encodedName + "'>" + encodedName + '</span>');
                 users.push(user);
             },
             removeUser: function(user) {
@@ -63,7 +60,8 @@ $(function() {
                     return;
                 }
                 var userName = user["Name"];
-                $("#user-" + userName).remove();
+                var encodedName = $('<div />').text(userName).html();
+                $("#user-" + encodedName).remove();
                 var index = -1;
                 for (var i = 0; i < users.length; i++) {
                     if (users[i]["Name"] === userName) {
@@ -84,7 +82,7 @@ $(function() {
                 players = playerList;
                 populateGame();
             },
-            turnStart: function (state) {
+            turnStart: function(state) {
                 console.log("Starting new turn...");
                 if (!loaded) {
                     return;
@@ -100,7 +98,7 @@ $(function() {
                         $("#timerValue").text(roundTimer);
                     },
                     1000);
-                console.log("delete users");
+                console.log("Delete users");
                 deleteAllUsers();
                 populateGame();
             },
@@ -109,24 +107,19 @@ $(function() {
                     return;
                 }
                 var audio = new Audio();
-                audio.src = soundPath + "bigbadugly.mp3";
+                audio.src = window.soundPath + "bigbadugly.mp3";
                 audio.play();
                 for (var i = 0; i < outcomes.length; i++) {
                     var outcome = outcomes[i];
-
-                    $('#outcomes').append("<span>- " + outcomeToString(outcome) + "</span>");
-
+                    var encodedName = $('<div />').text("- " + outcomeToString(outcome)).html();
+                    $('#outcomes').append("<span>" + encodedName + "</span>");
                     var command = outcome["ActCommand"];
-
                     //Someone got shot
                     if (command["ActType"] === 0) {
-                      
-
                         if (outcome["TargetDucked"]) {
                             //Make the person duck who was shot at
                             updateSprite('shoot', command["Actor"]["PlayerUser"]["Name"], command["Actor"]["PlayerUser"]["Name"]);
                             updateSprite('duck', command["Target"]["PlayerUser"]["Name"], command["Target"]["PlayerUser"]["Name"]);
-                        
                         } else {
                             updateSprite('shoot', command["Actor"]["PlayerUser"]["Name"], command["Target"]["PlayerUser"]["Name"]);
                             updateSprite('dead', command["Target"]["PlayerUser"]["Name"], command["Target"]["PlayerUser"]["Name"]);
@@ -137,18 +130,15 @@ $(function() {
                         updateSprite('duck', command["Actor"]["PlayerUser"]["Name"], command["Actor"]["PlayerUser"]["Name"]);
                     }
 
-                    game.client.receiveChatMessage({Name: "Server"}, outcomeToString(outcome));
-
+                    game.client.receiveChatMessage({ Name: "Server" }, outcomeToString(outcome));
                 }
                 var delay = 5000;
 
-                setTimeout(function () {
+                setTimeout(function() {
                     //deleteAllUsers();
                     game.server.sendReady();
-                    
-                    console.log("We sent server ready");
                 }, delay);
-                
+
             },
             gameEnd: function(winners) {
                 if (!loaded) {
@@ -162,38 +152,44 @@ $(function() {
                 }
                 game.client.receiveChatMessage({ Name: "Winner/s" }, winnerString);
                 $('#suddenDeathBtn').hide();
+                $("#suddenDeathValue").hide();
                 $("#gamesetup").show();
             },
-            suddenDeathStart: function (state) {
+            suddenDeathStart: function(state) {
                 if (!loaded) {
                     return;
                 }
+                players = state["players"];
+                populateGame();
                 var audio = new Audio();
-                audio.src = soundPath + "High Noon.mp3";
+                audio.src = window.soundPath + "High Noon.mp3";
                 audio.play();
                 suddenDeathTimer = 5;
+                $("#suddenDeathValue").show();
                 $("#suddenDeathValue").text(suddenDeathTimer);
-                suddenDeathInterval = window.setInterval(function () {
-                    suddenDeathTimer--;
-                    if (suddenDeathTimer <= 0) {
-                        window.clearInterval(suddenDeathInterval);
-                    }
-                    $("#suddenDeathValue").text(suddenDeathTimer);
-                },
+                suddenDeathInterval = window.setInterval(function() {
+                        suddenDeathTimer--;
+                        if (suddenDeathTimer <= 0) {
+                            window.clearInterval(suddenDeathInterval);
+                        }
+                        $("#suddenDeathValue").text(suddenDeathTimer);
+                    },
                     1000);
                 $("#suddenDeathBtn").show();
                 console.log("delete users state");
                 deleteAllUsers();
                 populateGame();
             },
-            receiveChatMessage: function (user, message) {
+            receiveChatMessage: function(user, message) {
                 if (!loaded) {
                     return;
                 }
+                var encodedName = $('<div />').text(user["Name"]).html();
+                var encodedMessage = $('<div />').text(message).html();
                 if (user["Name"] === "Server") {
-                    $("#chatLog").append("<span style='color:red'><b>Server</b>: " + message + " </span>");
+                    $("#chatLog").append("<span style='color:red'><b>Server</b>: " + encodedMessage + " </span>");
                 } else {
-                    $("#chatLog").append("<span><b>" + user["Name"] + "</b>: " + message + " </span>");
+                    $("#chatLog").append("<span><b>" + encodedName + "</b>: " + encodedMessage + " </span>");
                 }
                 $('#chat').scrollTop($('#chat')[0].scrollHeight);
             }
@@ -212,7 +208,7 @@ $(function() {
                 for (var i = 0; i < users.length; i++) {
                     var userName = users[i]["Name"];
                     var encodedName = $('<div />').text(userName).html();
-                    $('#lobby').append("<span id='user-" + userName + "'>" + encodedName + '</span>');
+                    $('#lobby').append("<span id='user-" + encodedName + "'>" + encodedName + '</span>');
                 }
                 if (gameInProgress) {
                     game.client.gameStart(state);
@@ -230,18 +226,17 @@ $(function() {
             .click(function() {
                 game.server.broadcastChatMessage($("#chatText").val());
                 $("#chatText").val("");
-                console.log("V: "+$("#chatText").val());
             });
         // Bind hitting enter in the chat box
         $("#chatText")
-            .keyup(function (e) {
-                if (e.keyCode == 13) {
+            .keyup(function(e) {
+                if (e.keyCode === 13) {
                     $("#chatSend").click();
                 }
             });
         // Bind sudden death button handler
         $("#suddenDeathBtn")
-            .click(function () {
+            .click(function() {
                 game.server.suddenDeathShoot();
             });
     }
@@ -274,7 +269,6 @@ $(function() {
 //Distribute the players around the circle
 function distributePlayers(deg) {
     deg = deg || 0;
-    var count = 1;
     //Radius of circle
     var radius = 200;
     var fields = $('.field:not([deleting])'),
@@ -285,13 +279,13 @@ function distributePlayers(deg) {
         step = (2 * Math.PI) / fields.length;
 
     //Go through each player and set up position + call sprite
-    fields.each(function () {
+    fields.each(function() {
         var x = Math.round(width / 2 + radius * Math.cos(angle) - $(this).width() / 2);
         var y = Math.round(height / 2 + radius * Math.sin(angle) - $(this).height() / 2);
 
         $(this).css({
             left: x + 'px',
-            top: y + 'px',
+            top: y + 'px'
         });
 
         angle += step;
@@ -304,62 +298,51 @@ function distributePlayers(deg) {
 var incrementUsers = 0;
 
 //Add a new player with a username
-function addPlayer(player) {
+function addPlayer(player, showbutton) {
     var username = player["PlayerUser"]["Name"];
+    var encodedName = $('<div />').text(username).html();
+    var playerDiv;
     if (username !== name) {
-        $('<div/>',
-            {
-                'class': 'field'
-            })
-            .append(
-                $('<p/>', { 'class': 'username', 'text': username }),
-                $('<span/>', {'text': player["NumDucks"] + " Ducks Left"}),
-                $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
-                $('<button/>',
-                {
-                    'class': 'shootButton',
-                    'id': 'shoot_' + username,
-                    'text': 'Shoot'
-                })
-            )
-            .css({
-                left: $('#container').width() / 2 - 25 + 'px',
-                top: $('#container').height() / 2 - 25 + 'px'
-            })
-            .addClass('anim')
-            .appendTo('#container')
-        distributePlayers();
-    } else {
-        $('<div/>',
-            {
-                'class': 'field'
-            })
-            .append(
-                $('<p/>', { 'class': 'username', 'text': username }),
-                $('<span/>', { 'text': player["NumDucks"] + " Ducks Left" }),
-                $('<img/>', { 'src': imagePath + 's.png', 'id': username, 'class': 'player' }),
-                $('<button/>',
-                {
-                    'class': 'duckButton',
-                    'id': 'duck_' + username,
-                    'text': 'Duck'
-                })
-            )
-            .css({
+        playerDiv = $('<div/>', { 'class': 'field' }).append(
+            $('<p/>', { 'class': 'username', 'text': encodedName }),
+            $('<span/>', { 'text': player["NumDucks"] + " Ducks Left" }),
+            $('<img/>', { 'src': window.imagePath + 's.png', 'id': encodedName, 'class': 'player' })
+        );
+        if (showbutton) {
+            playerDiv.append($('<button/>', { 'class': 'shootButton', 'id': 'shoot_' + encodedName, 'text': 'Shoot' }));
+        }
+        playerDiv.css({
                 left: $('#container').width() / 2 - 25 + 'px',
                 top: $('#container').height() / 2 - 25 + 'px'
             })
             .addClass('anim')
             .appendTo('#container');
-        if (player["NumDucks"] == 0) {
+        distributePlayers();
+    } else {
+        playerDiv = $('<div/>', { 'class': 'field' }).append(
+            $('<p/>', { 'class': 'username', 'text': encodedName }),
+            $('<span/>', { 'text': player["NumDucks"] + " Ducks Left" }),
+            $('<img/>', { 'src': window.imagePath + 's.png', 'id': encodedName, 'class': 'player' })
+        );
+        if (showbutton) {
+            playerDiv.append($('<button/>', { 'class': 'duckButton', 'id': 'duck_' + encodedName, 'text': 'Duck' }));
+        }
+        playerDiv.css({
+                left: $('#container').width() / 2 - 25 + 'px',
+                top: $('#container').height() / 2 - 25 + 'px'
+            })
+            .addClass('anim')
+            .appendTo('#container');
+        if (player["NumDucks"] === 0) {
             $(".duckButton").hide();
         }
         distributePlayers();
     }
 
 }
+
 function deleteAllUsers() {
-  
+
 
     $('.field').remove();
 
@@ -368,15 +351,16 @@ function deleteAllUsers() {
 
 function deleteUser(player) {
     var username = player["PlayerUser"]["Name"];
-    $('#' + username)
-    .attr('deleting', 'true')
-    .css({
-        left: $('#container').width() / 2 - 25 + 'px',
-        top: $('#container').height() / 2 - 25 + 'px'
-    })
-    .fadeOut(400, function () {
-        $(this).parent().remove();
-    });
+    var encodedName = $('<div />').text(username).html();
+    $('#' + encodedName)
+        .attr('deleting', 'true')
+        .css({
+            left: $('#container').width() / 2 - 25 + 'px',
+            top: $('#container').height() / 2 - 25 + 'px'
+        })
+        .fadeOut(400, function() {
+            $(this).parent().remove();
+        });
 
     distributePlayers();
 }
@@ -384,28 +368,28 @@ function deleteUser(player) {
 distributePlayers();
 
 function updateSprite(action, actor, target) {
-    console.log(action + " " + actor + " " + target);
-  
-  
-        var grabXactor = parseInt($('#' + actor).parent().css("left"));
-        var grabYactor = parseInt($('#' + actor).parent().css("top"));
+    var encodedActor = $('<div />').text(actor).html();
+    var encodedTarget = $('<div />').text(target).html();
 
-        var grabXtarget = parseInt($('#' + target).parent().css("left"));
-        var grabYtarget = parseInt($('#' + target).parent().css("top"));
-     
-    if (action == 'shoot') {
+    var grabXactor = parseInt($('#' + encodedActor).parent().css("left"));
+    var grabYactor = parseInt($('#' + encodedActor).parent().css("top"));
+
+    var grabXtarget = parseInt($('#' + encodedTarget).parent().css("left"));
+    var grabYtarget = parseInt($('#' + encodedTarget).parent().css("top"));
+
+    if (action === 'shoot') {
         //document.getElementById(actor).src = imagePath + shootimages[spriteNum];
-        setSprite('shoot', actor, grabXactor, grabYactor, grabXtarget, grabYtarget);
+        setSprite('shoot', encodedActor, grabXactor, grabYactor, grabXtarget, grabYtarget);
     }
 
-    if (action == 'dead') {
+    if (action === 'dead') {
         //document.getElementById(id).src = imagePath + deadimages[0];
-        setSprite('dead', actor, 0, 0, 0, 0);
+        setSprite('dead', encodedActor, 0, 0, 0, 0);
 
     }
-    if (action == 'duck') {
+    if (action === 'duck') {
         //document.getElementById(actor).src = imagePath + duckimages[0];
-        setSprite('duck', actor, 0, 0, 0, 0);
+        setSprite('duck', encodedActor, 0, 0, 0, 0);
 
     }
 }
@@ -464,49 +448,46 @@ function setSprite(action, id, currentX, currentY, targetX, targetY) {
     ];
 
     var duckimages = [
-       'duck.png'
+        'duck.png'
     ];
-    console.log(id);
-    if (action == 'stand') {
-        document.getElementById(id).src = imagePath + standimages[spriteNum];
+    if (action === 'stand') {
+        document.getElementById(id).src = window.imagePath + standimages[spriteNum];
     }
 
-    if (action == 'shoot') {
-        console.log(id);
-        document.getElementById(id).src = imagePath + shootimages[spriteNum];
+    if (action === 'shoot') {
+        document.getElementById(id).src = window.imagePath + shootimages[spriteNum];
     }
 
-    if (action == 'dead') {
-        document.getElementById(id).src = imagePath + deadimages[0];
+    if (action === 'dead') {
+        document.getElementById(id).src = window.imagePath + deadimages[0];
 
     }
-    if (action == 'duck') {
-        document.getElementById(id).src = imagePath + duckimages[0];
+    if (action === 'duck') {
+        document.getElementById(id).src = window.imagePath + duckimages[0];
 
     }
 }
 
-$(document).on('click', '.shootButton', function () {
-    var grabID = this.id.substr(6);
-    console.log(grabID);
+$(document).on('click', '.shootButton', function() {
+    var grabId = this.id.substr(6);
     var grabX = parseInt($(this).parent().css("left"));
     var grabY = parseInt($(this).parent().css("top"));
+    var encodedName = $('<div />').text(name).html();
     //The ID in this case should be the person shooting, change when the
     //current person's ID can be accessed
-    setSprite('shoot', name, 345, 45, grabX + 55, grabY + 55);
+    setSprite('shoot', encodedName, 345, 45, grabX + 55, grabY + 55);
     //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
-    game.server.sendAction("SHOOT " + grabID);
-  
+    game.server.sendAction("SHOOT " + grabId);
+
 });
 
-$(document).on('click', '.duckButton', function () {
-    var grabID = this.id.substr(5);
-    console.log(grabID);
+$(document).on('click', '.duckButton', function() {
     var grabX = parseInt($(this).parent().css("left"));
     var grabY = parseInt($(this).parent().css("top"));
+    var encodedName = $('<div />').text(name).html();
     //The ID in this case should be the person shooting, change when the
     //current person's ID can be accessed
-    setSprite('duck', name, 345, 45, grabX, grabY);
+    setSprite('duck', encodedName, 345, 45, grabX, grabY);
     //setSprite('dead', grabID, 345, 45, grabX + 55, grabY + 55)
     game.server.sendAction("DUCK");
 
