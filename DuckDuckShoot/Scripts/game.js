@@ -125,7 +125,7 @@ $(function() {
                 $('#suddenDeathBtn').hide();
                 $("#gamesetup").show();
             },
-            suddenDeathStart: function () {
+            suddenDeathStart: function (state) {
                 if (!loaded) {
                     return;
                 }

@@ -78,7 +78,8 @@ namespace DuckDuckShoot.Hubs
             GameLobby.CurrentGame.StartSuddenDeath();
 
             // Tell all clients sudden death is happening
-            Clients.All.suddenDeathStart();
+            LobbyState state = GameLobby.getLobbyState();
+            Clients.All.suddenDeathStart(state);
         }
 
         /// <summary>
