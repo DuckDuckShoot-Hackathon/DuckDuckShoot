@@ -293,7 +293,10 @@ function addPlayer(player) {
                 top: $('#container').height() / 2 - 25 + 'px'
             })
             .addClass('anim')
-            .appendTo('#container')
+            .appendTo('#container');
+        if (player["NumDucks"] == 0) {
+            $(".duckButton").hide();
+        }
         distributePlayers();
     }
 
