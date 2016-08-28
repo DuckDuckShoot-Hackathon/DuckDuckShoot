@@ -32,6 +32,7 @@ namespace DuckDuckShoot.Hubs
 
         public void EndGame()
         {
+            if (GameLobby.CurrentGame == null) return;
 
             var winners = GameLobby.CurrentGame.GetWinners();
 
