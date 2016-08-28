@@ -18,6 +18,10 @@ namespace DuckDuckShoot.Hubs
 
         public void StartGame()
         {
+            if (GameLobby.Users.Count < 3)
+            {
+                return;
+            }
             GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 1, 0), (int)Math.Log(GameLobby.Users.Count, 2));
 
             // Tell all clients that the game has started
