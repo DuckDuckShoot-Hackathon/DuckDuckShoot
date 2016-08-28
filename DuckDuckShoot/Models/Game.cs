@@ -20,6 +20,10 @@ namespace DuckDuckShoot.Models
         public Dictionary<Player, Action> TurnActions { get; }
         public List<Outcome> TurnOutcomes { get; }
 
+        public bool SuddenDeathOn { get; set; }
+        public bool SuddenDeathCanShoot { get; set; }
+        public bool SuddenDeathShot { get; set; }
+
         public Game(List<User> users, TimeSpan turnTime, int initialDucks)
         {
             InitialDucks = initialDucks;
@@ -28,6 +32,10 @@ namespace DuckDuckShoot.Models
             TurnActions = new Dictionary<Player, Action>();
             TurnOutcomes = new List<Outcome>();
             IsMidTurn = false;
+
+            SuddenDeathOn = false;
+            SuddenDeathCanShoot = false;
+            SuddenDeathShot = false;
 
             // Add all users in the lobby to the game
             users.ForEach(user => Players.Add(new Player(user, InitialDucks)));       
@@ -64,6 +72,43 @@ namespace DuckDuckShoot.Models
             TurnOutcomes.Clear();
             IsMidTurn = true;
             UnreadiedPlayers = 0;
+        }
+
+        public void StartSuddenDeath()
+        {
+            SuddenDeathOn = true;
+            SuddenDeathCanShoot = false;
+            SuddenDeathShot = false;
+            TurnOutcomes.Clear();
+            IsMidTurn = true;
+
+            Timer t = new Timer(state => { SuddenDeathCanShoot = true; },
+                null, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(-1));
+        }
+
+        /// <summary>
+        /// Process a Sudden Death Shoot command, adding its outcome
+        /// </summary>
+        /// <param name="shooter"></param>
+        /// <returns></returns>
+        public void SuddenDeathShoot(Player shooter, Player target)
+        {
+            if (!SuddenDeathOn) return;
+            if (SuddenDeathShot) return;
+            SuddenDeathShot = true;
+            IsMidTurn = false;
+
+            if (SuddenDeathCanShoot)
+            {
+                // Shooter wins
+                AddPlayerAction(shooter, new Action(Action.ActionType.SHOOT, shooter, target));
+
+            }
+            else
+            {
+                // Shooter loses
+                AddPlayerAction(target, new Action(Action.ActionType.SHOOT, target, shooter));
+            }
         }
 
         public void AddPlayerAction(Player player, Action action)
@@ -194,7 +239,7 @@ namespace DuckDuckShoot.Models
                     else if (player.DeathTime - lastDiedTime >= TimeSpan.Zero)
                     {
                         // This player died at or after the latest found death time
-                        if (player.DeathTime - lastDiedTime > TimeSpan.FromSeconds(5))
+                        if (player.DeathTime - lastDiedTime > TimeSpan.FromSeconds(2))
                         {
                             // Player died at least 5 seconds more recently - i.e. not in the same round
                             tieResult.Clear();

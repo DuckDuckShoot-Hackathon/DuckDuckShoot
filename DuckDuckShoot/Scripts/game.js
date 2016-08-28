@@ -13,7 +13,7 @@ var outcomeToString = function(outcome) {
         if (outcome["TargetDucked"]) {
             return outcomeStr + " but they ducked.";
         } else {
-            return outcomeStr;
+            return outcomeStr + ".";
         }
     } else {
         return command["Actor"]["PlayerUser"]["Name"] + " ducked (but wasn't shot at).";
@@ -160,6 +160,9 @@ $(function() {
                 $("#actionsLabel").hide();
                 $("#gamesetup").show();
             },
+            suddenDeathStart: function () {
+                $("#suddenDeathBtn").show();
+            },
             receiveChatMessage: function(user, message) {
                 $("#chatLog").append("<span><b>" + user["Name"] + "</b>: " + message + " </span>");
             }
@@ -195,6 +198,11 @@ $(function() {
         $("#chatSend")
             .click(function() {
                 game.server.broadcastChatMessage($("#chatText").val());
+            });
+        // Bind sudden death button handler
+        $("#suddenDeathBtn")
+            .click(function () {
+                game.server.suddenDeathShoot();
             });
     }
     // Start the connection.

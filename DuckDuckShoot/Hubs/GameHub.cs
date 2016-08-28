@@ -18,6 +18,10 @@ namespace DuckDuckShoot.Hubs
 
         public void StartGame()
         {
+            if (GameLobby.Users.Count < 3)
+            {
+                return;
+            }
             GameLobby.CurrentGame = new Game(GameLobby.Users, new TimeSpan(0, 1, 0), (int)Math.Log(GameLobby.Users.Count, 2));
 
             // Tell all clients that the game has started
@@ -44,16 +48,31 @@ namespace DuckDuckShoot.Hubs
                 EndGame();
                 return;
             }
-            
+                                   
             // Begin the timer to the end of the turn
             GameLobby.CurrentGame.StartTurn();
+
+            // Check for sudden death
+            if (GameLobby.CurrentGame.NumPlayersLeft() == 2)
+            {
+                StartSuddenDeath();
+                return;
+            }
 
             // Tell all clients the turn is starting
             Clients.All.turnStart(GameLobby.getLobbyState());
 
-             turnTimer = new Timer(ProcessGameTurn, null, GameLobby.CurrentGame.TurnTime, TimeSpan.FromMilliseconds(-1));
+            turnTimer = new Timer(ProcessGameTurn, null, GameLobby.CurrentGame.TurnTime, TimeSpan.FromMilliseconds(-1));
 
             
+        }
+
+        public void StartSuddenDeath()
+        {
+            GameLobby.CurrentGame.StartSuddenDeath();
+
+            // Tell all clients sudden death is happening
+            Clients.All.suddenDeathStart();
         }
 
         /// <summary>
@@ -114,6 +133,34 @@ namespace DuckDuckShoot.Hubs
             // Send outcomes to clients
             Clients.All.getOutcomes(outcomes.ToArray());
             
+        }
+
+        /// <summary>
+        /// Client sends a message to indicate that they shot in sudden death
+        /// </summary>
+        public void SuddenDeathShoot()
+        {
+            if (GameLobby.CurrentGame.SuddenDeathOn)
+            {
+                Player shooter = GameLobby.CurrentGame.getPlayerFromConnectionId(Context.ConnectionId);
+                Player target = null;
+
+                if (!shooter.IsAlive)
+                {
+                    return;
+                }
+
+                foreach (Player p in GameLobby.CurrentGame.GetAlivePlayers())
+                {
+                    if (!p.PlayerUser.Name.Equals(shooter.PlayerUser.Name))
+                    {
+                        target = p;
+                        break;
+                    }
+                }                
+                GameLobby.CurrentGame.SuddenDeathShoot(shooter, target);
+                ProcessGameTurn(null);
+            }
         }
 
         public void BroadcastChatMessage(string message)
